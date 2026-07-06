@@ -34,9 +34,9 @@ import './sidebar.css';
 
 const MENU_ITEMS = [
     // { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '#dashboard' },
-    { key: 'mesin', label: 'Stok Spare Part & Toner', icon: Printer, href: '#mesin' },
+    { key: 'spare_part_toner', label: 'Stok Spare Part & Toner', icon: Printer, href: '#spare_part_toner' },
     { key: 'maintenance', label: 'Riwayat Perbaikan Mesin', icon: Wrench, href: '#maintenance' },
-    { key: 'laporan', label: 'Penggunaan Stok oleh Teknisi', icon: FileBarChart2, href: '#laporan' },
+    { key: 'stock_usage', label: 'Penggunaan Stok oleh Teknisi', icon: FileBarChart2, href: '#stock_usage' },
     // { key: 'pengaturan', label: 'Pengaturan', icon: Settings, href: '#pengaturan' },
 ];
 
@@ -137,6 +137,6 @@ Sidebar.propTypes = {
 };
 
 Sidebar.defaultProps = {
-    activeKey: 'dashboard',
+    activeKey: 'spare_part_toner',
     onNavigate: undefined,
 };

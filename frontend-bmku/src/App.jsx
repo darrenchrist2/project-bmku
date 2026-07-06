@@ -8,7 +8,7 @@ import Sidebar from './components/sidebar';
  * konten utama TIDAK perlu diberi margin/padding tambahan saat sidebar terbuka.
  */
 export default function App() {
-  const [activeKey, setActiveKey] = useState('dashboard');
+  const [activeKey, setActiveKey] = useState('spare_part_toner');
 
   const handleNavigate = (key) => {
     setActiveKey(key);
