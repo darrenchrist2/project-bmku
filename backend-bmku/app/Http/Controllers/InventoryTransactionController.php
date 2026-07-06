@@ -1,0 +1,158 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Services\InventoryTransactionService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class InventoryTransactionController extends Controller
+{
+    public function __construct(
+        protected InventoryTransactionService $inventoryTransactionService
+    ) {}
+
+    /**
+     * Display all transactions.
+     */
+    public function index(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Inventory transactions retrieved successfully.',
+            'data' => $this->inventoryTransactionService->getTransactions(),
+        ]);
+    }
+
+    /**
+     * Display transaction by ID.
+     */
+    public function show(int $id): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Inventory transaction retrieved successfully.',
+            'data' => $this->inventoryTransactionService->getTransactionById($id),
+        ]);
+    }
+
+    /**
+     * Stock In.
+     */
+    public function stockIn(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'item_id' => 'required|exists:inventory_items,id',
+            'transaction_date' => 'required|date',
+            'quantity' => 'required|integer|min:1',
+            'note' => 'nullable|string|max:255',
+        ]);
+
+        $transaction = $this->inventoryTransactionService->stockIn($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Stock added successfully.',
+            'data' => $transaction,
+        ], 201);
+    }
+
+    /**
+     * Stock Out.
+     */
+    public function stockOut(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'item_id' => 'required|exists:inventory_items,id',
+            'branch_office_id' => 'required|exists:branch_offices,id',
+            'transaction_date' => 'required|date',
+            'quantity' => 'required|integer|min:1',
+            'note' => 'nullable|string|max:255',
+        ]);
+
+        try {
+            $transaction = $this->inventoryTransactionService->stockOut($validated);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Stock issued successfully.',
+                'data' => $transaction,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    /**
+     * Current stock by item.
+     */
+    public function currentStock(int $itemId): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Current stock retrieved successfully.',
+            'data' => [
+                'item_id' => $itemId,
+                'current_stock' => $this->inventoryTransactionService->getCurrentStock($itemId),
+            ],
+        ]);
+    }
+
+    /**
+     * Monthly stock report.
+     */
+    public function monthlyReport(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'year' => 'required|integer|min:2000',
+            'month' => 'required|integer|between:1,12',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Monthly stock report retrieved successfully.',
+            'data' => $this->inventoryTransactionService->getMonthlyStockReport(
+                $validated['year'],
+                $validated['month']
+            ),
+        ]);
+    }
+
+    /**
+     * Branch usage report.
+     */
+    public function branchUsage(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'branch_office_id' => 'required|exists:branch_offices,id',
+            'year' => 'required|integer|min:2000',
+            'month' => 'required|integer|between:1,12',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Branch usage retrieved successfully.',
+            'data' => $this->inventoryTransactionService->getBranchUsage(
+                $validated['branch_office_id'],
+                $validated['year'],
+                $validated['month']
+            ),
+        ]);
+    }
+
+    /**
+     * Delete transaction.
+     */
+    public function destroy(int $id): JsonResponse
+    {
+        $this->inventoryTransactionService->deleteTransaction($id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Inventory transaction deleted successfully.',
+        ]);
+    }
+}
