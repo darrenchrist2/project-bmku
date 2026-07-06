@@ -89,7 +89,10 @@
    Header
    -------------------------------------------------------------------- */
 .sb-header.offcanvas-header {
-    align-items: flex-start;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     padding: 20px 16px 16px;
     background: var(--sb-bg-raised);
     border-bottom: 1px solid var(--sb-border);
