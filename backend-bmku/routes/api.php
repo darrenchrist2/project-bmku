@@ -13,7 +13,6 @@ Route::apiResource('inventory-items', InventoryItemController::class);
 Route::prefix('inventory-transactions')->group(function () {
 
     Route::get('/', [InventoryTransactionController::class, 'index']);
-    Route::get('/{id}', [InventoryTransactionController::class, 'show']);
 
     Route::post('/stock-in', [InventoryTransactionController::class, 'stockIn']);
     Route::post('/stock-out', [InventoryTransactionController::class, 'stockOut']);
@@ -24,5 +23,9 @@ Route::prefix('inventory-transactions')->group(function () {
 
     Route::get('/branch-usage', [InventoryTransactionController::class, 'branchUsage']);
 
-    Route::delete('/{id}', [InventoryTransactionController::class, 'destroy']);
+    Route::get('/{id}', [InventoryTransactionController::class, 'show'])
+        ->whereNumber('id');
+
+    Route::delete('/{id}', [InventoryTransactionController::class, 'destroy'])
+        ->whereNumber('id');
 });

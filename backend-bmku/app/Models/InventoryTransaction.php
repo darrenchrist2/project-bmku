@@ -20,13 +20,13 @@ class InventoryTransaction extends Model
         'transaction_date' => 'date',
     ];
 
-    public function item(): BelongsTo
+    public function inventoryItem(): BelongsTo
     {
-        return $this->belongsTo(InventoryItem::class);
+        return $this->belongsTo(InventoryItem::class, 'item_id');
     }
 
     public function branchOffice(): BelongsTo
     {
-        return $this->belongsTo(BranchOffice::class);
+        return $this->belongsTo(BranchOffice::class, 'branch_office_id');
     }
 }
