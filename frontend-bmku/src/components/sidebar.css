@@ -1,0 +1,310 @@
+/* ==========================================================================
+   Sidebar.css - Tema industrial/utilitarian untuk "Manajemen Mesin Printer"
+   Palet: charcoal gelap + aksen safety-orange, mengesankan panel kontrol mesin.
+   Font: Oswald (kondensed, mekanis) untuk judul, IBM Plex Mono untuk data/label.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+    --sb-bg: #1b1d1f;
+    --sb-bg-raised: #232628;
+    --sb-border: #34383b;
+    --sb-accent: #ff7a30;
+    --sb-accent-dim: #c95f24;
+    --sb-text: #eceae6;
+    --sb-text-dim: #9a9d9f;
+    --sb-font-display: 'Oswald', 'Arial Narrow', sans-serif;
+    --sb-font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+    /* Lebar sidebar - mobile-first, di-override di media query di bawah */
+    --sb-width: 88vw;
+}
+
+/* --------------------------------------------------------------------
+   Tombol toggle (hamburger) - hanya tampil saat sidebar tertutup
+   -------------------------------------------------------------------- */
+.sb-toggle-btn {
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 1045;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--sb-bg-raised);
+    border: 2px solid var(--sb-border);
+    border-radius: 4px;
+    color: var(--sb-text);
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.sb-toggle-btn:hover {
+    border-color: var(--sb-accent);
+    box-shadow: 0 2px 14px rgba(255, 122, 48, 0.35);
+}
+
+.sb-toggle-btn:active {
+    transform: scale(0.94);
+}
+
+.sb-toggle-btn::before {
+    /* aksen garis kecil ala warning-strip di sudut tombol */
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 10px;
+    height: 3px;
+    background: var(--sb-accent);
+}
+
+/* --------------------------------------------------------------------
+   Offcanvas container (overlay, tidak mendorong konten lain)
+   -------------------------------------------------------------------- */
+.sb-offcanvas.offcanvas {
+    width: var(--sb-width) !important;
+    max-width: 380px;
+    background: var(--sb-bg);
+    color: var(--sb-text);
+    border-right: 1px solid var(--sb-border);
+    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.5);
+    /* Transisi slide kiri <-> kanan yang lebih halus dari default bootstrap */
+    transition: transform 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.sb-backdrop.offcanvas-backdrop {
+    background: #000;
+}
+
+.sb-backdrop.offcanvas-backdrop.show {
+    opacity: 0.55;
+}
+
+/* --------------------------------------------------------------------
+   Header
+   -------------------------------------------------------------------- */
+.sb-header.offcanvas-header {
+    align-items: flex-start;
+    padding: 20px 16px 16px;
+    background: var(--sb-bg-raised);
+    border-bottom: 1px solid var(--sb-border);
+    position: relative;
+}
+
+/* Garis diagonal hazard-stripe tipis di tepi bawah header */
+.sb-header.offcanvas-header::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 3px;
+    background: repeating-linear-gradient(-45deg,
+            var(--sb-accent) 0 8px,
+            transparent 8px 16px);
+    opacity: 0.9;
+}
+
+.sb-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sb-brand__eyebrow {
+    font-family: var(--sb-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--sb-accent);
+    font-weight: 600;
+}
+
+.sb-brand__title {
+    font-family: var(--sb-font-display);
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--sb-text);
+    line-height: 1.25;
+    text-transform: uppercase;
+}
+
+.sb-close-btn {
+    background: transparent;
+    border: 1px solid var(--sb-border);
+    color: var(--sb-text-dim);
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    font-size: 18px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.sb-close-btn:hover {
+    color: var(--sb-accent);
+    border-color: var(--sb-accent);
+}
+
+/* --------------------------------------------------------------------
+   Body / Nav
+   -------------------------------------------------------------------- */
+.sb-body.offcanvas-body {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 10px 0;
+}
+
+.sb-nav {
+    flex: 1;
+    gap: 2px;
+}
+
+.sb-nav__item {
+    width: 100%;
+}
+
+.sb-nav__link {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 12px;
+    border-radius: 4px;
+    color: var(--sb-text-dim) !important;
+    font-family: var(--sb-font-mono);
+    font-size: 13.5px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    border-left: 3px solid transparent;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.sb-nav__link:hover {
+    background: var(--sb-bg-raised);
+    color: var(--sb-text) !important;
+}
+
+.sb-nav__link.is-active {
+    background: var(--sb-bg-raised);
+    color: var(--sb-text) !important;
+    border-left-color: var(--sb-accent);
+}
+
+.sb-nav__link.is-active .sb-nav__icon {
+    color: var(--sb-accent);
+}
+
+.sb-nav__icon {
+    flex-shrink: 0;
+    color: var(--sb-text-dim);
+}
+
+.sb-nav__label {
+    flex: 1;
+    text-transform: uppercase;
+}
+
+.sb-nav__chevron {
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    color: var(--sb-accent);
+}
+
+.sb-nav__link:hover .sb-nav__chevron,
+.sb-nav__link.is-active .sb-nav__chevron {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* --------------------------------------------------------------------
+   Footer - profil pengguna (dummy)
+   -------------------------------------------------------------------- */
+.sb-footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 12px;
+    border-top: 1px solid var(--sb-border);
+    background: var(--sb-bg-raised);
+}
+
+.sb-avatar {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: var(--sb-accent-dim);
+    color: #1b1d1f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--sb-font-display);
+    font-weight: 700;
+    font-size: 14px;
+    border: 2px solid var(--sb-accent);
+}
+
+.sb-user {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.sb-user__name {
+    font-family: var(--sb-font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sb-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sb-user__role {
+    font-family: var(--sb-font-mono);
+    font-size: 11px;
+    color: var(--sb-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* --------------------------------------------------------------------
+   Mobile-first breakpoints - lebar sidebar membesar bertahap
+   -------------------------------------------------------------------- */
+@media (min-width: 380px) {
+    :root {
+        --sb-width: 320px;
+    }
+}
+
+@media (min-width: 768px) {
+    :root {
+        --sb-width: 340px;
+    }
+
+    .sb-brand__title {
+        font-size: 21px;
+    }
+}
+
+@media (min-width: 1200px) {
+    :root {
+        --sb-width: 360px;
+    }
+
+    .sb-toggle-btn {
+        top: 18px;
+        left: 18px;
+    }
+}
