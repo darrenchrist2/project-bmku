@@ -146,14 +146,19 @@ class InventoryTransactionService
         int $branchOfficeId,
         int $year,
         int $month
-    ): Collection {
+    ): array {
 
-        return InventoryTransaction::with('inventoryItem')
+        $transactions = InventoryTransaction::with('inventoryItem')
             ->where('branch_office_id', $branchOfficeId)
             ->where('transaction_type', 'OUT')
             ->whereYear('transaction_date', $year)
             ->whereMonth('transaction_date', $month)
             ->get();
+
+        return [
+            'total_quantity' => $transactions->sum('quantity'),
+            'data' => $transactions,
+        ];
     }
 
     /**

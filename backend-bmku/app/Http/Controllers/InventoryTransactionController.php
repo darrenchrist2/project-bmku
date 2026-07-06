@@ -132,14 +132,17 @@ class InventoryTransactionController extends Controller
             'month' => 'required|integer|between:1,12',
         ]);
 
+        $result = $this->inventoryTransactionService->getBranchUsage(
+            $validated['branch_office_id'],
+            $validated['year'],
+            $validated['month']
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Branch usage retrieved successfully.',
-            'data' => $this->inventoryTransactionService->getBranchUsage(
-                $validated['branch_office_id'],
-                $validated['year'],
-                $validated['month']
-            ),
+            'total_quantity' => $result['total_quantity'],
+            'data' => $result['data'],
         ]);
     }
 
