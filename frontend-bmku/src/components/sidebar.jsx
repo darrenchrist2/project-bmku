@@ -34,9 +34,9 @@ import './sidebar.css';
 
 const MENU_ITEMS = [
     // { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '#dashboard' },
-    { key: 'spare_part_toner', label: 'Stok Spare Part & Toner', icon: Printer, href: '#spare_part_toner' },
-    { key: 'maintenance', label: 'Riwayat Perbaikan Mesin', icon: Wrench, href: '#maintenance' },
-    { key: 'stock_usage', label: 'Penggunaan Stok oleh Teknisi', icon: FileBarChart2, href: '#stock_usage' },
+    { key: 'spare_part_toner', label: 'Stok Spare Part & Toner', icon: Printer},
+    { key: 'maintenance', label: 'Riwayat Perbaikan Mesin', icon: Wrench},
+    { key: 'stock_usage', label: 'Penggunaan Stok oleh Teknisi', icon: FileBarChart2},
     // { key: 'pengaturan', label: 'Pengaturan', icon: Settings, href: '#pengaturan' },
 ];
 
