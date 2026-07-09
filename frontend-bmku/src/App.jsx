@@ -1,40 +1,47 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from './components/sidebar';
 import StockPage from './pages/stockPage';
-
-const PAGES = {
-  spare_part_toner: StockPage,
-  maintenance: () => (
-    <div className="page-placeholder">
-      <h1>Riwayat Perbaikan Mesin</h1>
-      <p>Halaman ini belum dibuat.</p>
-    </div>
-  ),
-  stock_usage: () => (
-    <div className="page-placeholder">
-      <h1>Penggunaan Stok oleh Teknisi</h1>
-      <p>Halaman ini belum dibuat.</p>
-    </div>
-  ),
-};
+import { ROUTES } from './navigation';
 
 export default function App() {
-  const [activeKey, setActiveKey] = useState('spare_part_toner');
-
-  const handleNavigate = (key) => {
-    setActiveKey(key);
-    // arahkan ke routing di sini, misal: navigate(href)
-  };
-
-  const ActivePage = PAGES[activeKey] ?? PAGES.spare_part_toner;
-
   return (
     <div className="app-shell">
-      <Sidebar activeKey={activeKey} onNavigate={handleNavigate} />
+      <Sidebar />
 
       <main className="app-content">
-        <ActivePage />
+        <Routes>
+          <Route path="/" element={<Navigate to={ROUTES.stok} replace />} />
+          <Route path={ROUTES.stok} element={<StockPage />} />
+          <Route
+            path={ROUTES.maintenance}
+            element={(
+              <div className="page-placeholder">
+                <h1>Riwayat Perbaikan Mesin</h1>
+                <p>Halaman ini belum dibuat.</p>
+              </div>
+            )}
+          />
+          <Route
+            path={ROUTES.stockUsage}
+            element={(
+              <div className="page-placeholder">
+                <h1>Penggunaan Stok oleh Teknisi</h1>
+                <p>Halaman ini belum dibuat.</p>
+              </div>
+            )}
+          />
+          <Route
+            path="*"
+            element={(
+              <div className="page-placeholder">
+                <h1>404</h1>
+                <p>Halaman tidak ditemukan.</p>
+              </div>
+            )}
+          />
+        </Routes>
       </main>
     </div>
   );

@@ -8,37 +8,10 @@ import {
     NavItem,
     NavLink,
 } from 'reactstrap';
-import {
-    Menu,
-    LayoutDashboard,
-    Printer,
-    Wrench,
-    FileBarChart2,
-    Settings,
-    ChevronRight,
-} from 'lucide-react';
+import {Menu, ChevronRight} from 'lucide-react';
 import './sidebar.css';
-
-/**
- * Sidebar - Navigasi utama aplikasi Manajemen Mesin Printer.
- *
- * - Overlay: memakai reactstrap <Offcanvas /> sehingga sidebar tidak
- *   mendorong (push) konten di sampingnya, melainkan menumpuk di atasnya.
- * - Mobile-first: lebar & spacing diatur lewat CSS custom property yang
- *   di-override bertahap mulai dari breakpoint terkecil ke terbesar (lihat Sidebar.css).
- * - Toggle button (hamburger) hanya tampil saat sidebar tertutup, dan hilang
- *   otomatis saat sidebar terbuka (state isOpen mengontrol render-nya).
- * - Transisi slide kiri -> kanan (dan sebaliknya) ditangani oleh direction="start"
- *   bawaan Offcanvas, durasi & easing dihaluskan lewat CSS di Sidebar.css.
- */
-
-const MENU_ITEMS = [
-    // { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '#dashboard' },
-    { key: 'spare_part_toner', label: 'Stok Spare Part & Toner', icon: Printer},
-    { key: 'maintenance', label: 'Riwayat Perbaikan Mesin', icon: Wrench},
-    { key: 'stock_usage', label: 'Penggunaan Stok oleh Teknisi', icon: FileBarChart2},
-    // { key: 'pengaturan', label: 'Pengaturan', icon: Settings, href: '#pengaturan' },
-];
+import { NavLink as RouterNavLink } from 'react-router-dom';
+import { NAV_ITEMS } from '../navigation';
 
 // Data dummy - hanya untuk tampilan, belum terhubung ke sumber data nyata.
 const DUMMY_USER = {
@@ -97,20 +70,21 @@ export default function Sidebar({ activeKey, onNavigate }) {
 
                 <OffcanvasBody className="sb-body">
                     <Nav vertical className="sb-nav">
-                        {MENU_ITEMS.map((item) => {
+                        {NAV_ITEMS.map((item) => {
                             const Icon = item.icon;
-                            const isActive = activeKey === item.key;
                             return (
                                 <NavItem key={item.key} className="sb-nav__item">
-                                    <NavLink
-                                        href={item.href}
-                                        className={`sb-nav__link${isActive ? ' is-active' : ''}`}
-                                        onClick={(e) => handleNavClick(e, item)}
+                                    <RouterNavLink
+                                        to={item.path}
+                                        className={({ isActive }) =>
+                                            `sb-nav__link${isActive ? ' is-active' : ''}`
+                                        }
+                                        onClick={close}
                                     >
                                         <Icon size={18} strokeWidth={2} className="sb-nav__icon" aria-hidden="true" />
                                         <span className="sb-nav__label">{item.label}</span>
                                         <ChevronRight size={14} className="sb-nav__chevron" aria-hidden="true" />
-                                    </NavLink>
+                                    </RouterNavLink>
                                 </NavItem>
                             );
                         })}
