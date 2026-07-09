@@ -102,15 +102,3 @@ export default function Sidebar({ activeKey, onNavigate }) {
         </>
     );
 }
-
-Sidebar.propTypes = {
-    /** Key menu yang sedang aktif, contoh: 'dashboard' */
-    activeKey: PropTypes.string,
-    /** Callback dipanggil saat item menu diklik: (key, href) => void */
-    onNavigate: PropTypes.func,
-};
-
-Sidebar.defaultProps = {
-    activeKey: 'spare_part_toner',
-    onNavigate: undefined,
-};
