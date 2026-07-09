@@ -94,7 +94,7 @@ export default function StockPage() {
                         </Button>
                         <Button color="primary" className="sp-btn-add">
                             <Plus size={18} strokeWidth={2.25} />
-                            <span>Tambah Stok</span>
+                            <span>Tambah Barang</span>
                         </Button>
                     </div>
                 </div>
