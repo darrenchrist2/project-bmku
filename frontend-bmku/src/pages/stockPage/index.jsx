@@ -82,15 +82,21 @@ export default function StockPage() {
             <Container fluid className="sp-container">
                 <div className="sp-page-header">
                     <div>
-                        <h1 className="sp-title">Stok Spare Part &amp; Toner</h1>
+                        <h1 className="sp-title">Aliran Stok Spare Part &amp; Toner</h1>
                         <p className="sp-subtitle">
                             Pantau mutasi stok masuk dan keluar untuk kebutuhan spare part dan toner mesin printer.
                         </p>
                     </div>
-                    <Button color="primary" className="sp-btn-add">
-                        <Plus size={18} strokeWidth={2.25} />
-                        <span>Tambah Stok</span>
-                    </Button>
+                    <div className="sp-actions">
+                        <Button color="primary" className="sp-btn-add sp-btn-list">
+                            <span>Daftar Barang</span>
+                        </Button>
+
+                        <Button color="primary" className="sp-btn-add">
+                            <Plus size={18} strokeWidth={2.25} />
+                            <span>Tambah Stok</span>
+                        </Button>
+                    </div>
                 </div>
 
                 <Card className="sp-card">

@@ -92,6 +92,26 @@
   transform: translateY(1px);
 }
 
+.sp-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* ubah menjadi 6px atau 4px jika ingin lebih rapat */
+}
+
+.sp-btn-list {
+  background: #fff;
+  color: var(--sp-text);
+  border: 1px solid var(--sp-border);
+  box-shadow: none;
+}
+
+.sp-btn-list:hover,
+.sp-btn-list:focus {
+  background: #f7f8fa !important;
+  border-color: #d7dbe4 !important;
+  color: var(--sp-text) !important;
+}
+
 /* --------------------------------------------------------------------
    Card & toolbar
    -------------------------------------------------------------------- */
@@ -287,9 +307,9 @@
     justify-content: space-between;
   }
 
-  .sp-btn-add {
+  /* .sp-btn-add {
     align-self: center;
-  }
+  } */
 
   .sp-toolbar {
     flex-direction: row;
