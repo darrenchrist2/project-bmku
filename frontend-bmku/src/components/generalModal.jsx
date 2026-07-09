@@ -146,6 +146,8 @@ const GeneralModal = ({
             centered
             size={size}
             fade
+            backdrop={isSubmitting ? "static" : true}
+            keyboard={!isSubmitting}
             modalClassName="rm-modal-wrapper"
             backdropClassName="rm-backdrop"
             contentClassName="rm-content"

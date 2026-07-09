@@ -40,13 +40,16 @@ export default function StockPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [jenisFilter, setJenisFilter] = useState('Semua');
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const [stockData, setStockData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const toggleModal = () => {
-        setIsModalOpen(!isModalOpen);
+        if (isSubmitting) return;
+        setIsModalOpen((prev) => !prev);
     };
 
     const [formValues, setFormValues] = useState({
@@ -99,43 +102,42 @@ export default function StockPage() {
     ];
 
     const handleSubmit = async () => {
-        const payload = {
-            item_code: `ITM-${Date.now()}`,
-            item_name: formValues.item_name,
-            category: formValues.category,
-            unit: "PCS",
-            quantity: Number(formValues.quantity),
-            transaction_date: new Date()
-                .toISOString()
-                .split("T")[0],
-            note: "Initial Stock",
-        };
+        setIsSubmitting(true);
 
-        const result = await createInventoryItem(payload);
+        try {
+            const payload = {
+                item_code: `ITM-${Date.now()}`,
+                item_name: formValues.item_name,
+                category: formValues.category,
+                unit: "PCS",
+                quantity: Number(formValues.quantity),
+                transaction_date: new Date().toISOString().split("T")[0],
+                note: "Initial Stock",
+            };
 
-        if (result.success) {
+            const result = await createInventoryItem(payload);
 
-            // refresh tabel
-            await loadInventoryItems();
+            if (result.success) {
+                await loadInventoryItems();
 
-            // reset form
-            setFormValues({
-                item_name: "",
-                category: "",
-                quantity: "",
-            });
+                setFormValues({
+                    item_name: "",
+                    category: "",
+                    quantity: "",
+                });
 
-            setFormErrors({});
+                setFormErrors({});
 
-            toggleModal();
-        } else {
+                toggleModal();
+            } else {
+                if (result.errors) {
+                    setFormErrors(result.errors);
+                }
 
-            // validation Laravel
-            if (result.errors) {
-                setFormErrors(result.errors);
+                alert(result.message);
             }
-
-            alert(result.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -296,6 +298,7 @@ export default function StockPage() {
                 onChange={handleChange}
                 onSubmit={handleSubmit}
                 submitLabel="Simpan"
+                isSubmitting={isSubmitting}
             />
         </div>
     );
