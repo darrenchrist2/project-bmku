@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from './components/sidebar';
-import '../pages/inventoryItems';
 
 /**
  * Contoh integrasi Sidebar ke dalam layout aplikasi.
