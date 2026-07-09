@@ -89,6 +89,9 @@ export default function StockPage() {
                         </p>
                     </div>
                     <div className="sp-actions">
+                        <Button color="primary" className="sp-btn-add sp-btn-list" onClick={() => navigate('/spare-part-toner')}>
+                            <span>Kembali</span>
+                        </Button>
                         <Button color="primary" className="sp-btn-add">
                             <Plus size={18} strokeWidth={2.25} />
                             <span>Tambah Stok</span>
