@@ -1,31 +1,49 @@
-import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Sidebar from './components/sidebar';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
-/**
- * Contoh integrasi Sidebar ke dalam layout aplikasi.
- * Karena Sidebar berbentuk overlay (posisi fixed via Offcanvas),
- * konten utama TIDAK perlu diberi margin/padding tambahan saat sidebar terbuka.
- */
+import Sidebar from './components/Sidebar';
+
+import InventoryItems from './pages/InventoryItems';
+
 export default function App() {
-  const [activeKey, setActiveKey] = useState('spare_part_toner');
+    const [activeKey, setActiveKey] = useState('spare_part_toner');
+    const navigate = useNavigate();
 
-  const handleNavigate = (key) => {
-    setActiveKey(key);
-    // arahkan ke routing di sini, misal: navigate(href)
-  };
+    const handleNavigate = (key, href) => {
+        setActiveKey(key);
+        navigate(href);
+    };
 
-  return (
-    <div className="app-shell">
-      <Sidebar activeKey={activeKey} onNavigate={handleNavigate} />
+    return (
+        <>
+            <Sidebar
+                activeKey={activeKey}
+                onNavigate={handleNavigate}
+            />
 
-      <main className="app-content">
-        <h1>Konten Halaman: {activeKey}</h1>
-        <p>
-          Sidebar bersifat overlay, jadi elemen ini tidak akan terdorong
-          ke kanan saat sidebar dibuka.
-        </p>
-      </main>
-    </div>
-  );
+            <main className="app-content">
+                <Routes>
+                    <Route
+                        path="/"
+                        element={<InventoryItems />}
+                    />
+
+                    <Route
+                        path="/inventory-items"
+                        element={<InventoryItems />}
+                    />
+
+                    <Route
+                        path="/maintenance"
+                        element={<InventoryItems />}
+                    />
+
+                    <Route
+                        path="/stock-usage"
+                        element={<InventoryItems />}
+                    />
+                </Routes>
+            </main>
+        </>
+    );
 }
