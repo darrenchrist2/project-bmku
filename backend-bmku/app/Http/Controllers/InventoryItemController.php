@@ -10,7 +10,8 @@ class InventoryItemController extends Controller
 {
     public function __construct(
         protected InventoryItemService $inventoryItemService
-    ) {}
+    ) {
+    }
 
     /**
      * Display all inventory items.
@@ -27,6 +28,27 @@ class InventoryItemController extends Controller
     /**
      * Store a new inventory item.
      */
+    // public function store(Request $request): JsonResponse
+    // {
+    //     $validated = $request->validate([
+    //         'item_code' => 'required|string|max:50|unique:inventory_items,item_code',
+    //         'item_name' => 'required|string|max:150',
+    //         'category' => 'required|in:SPAREPART,TONER',
+    //         'unit' => 'nullable|string|max:30',
+    //     ]);
+
+    //     $inventoryItem = $this->inventoryItemService->createInventoryItem($validated);
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Inventory item created successfully.',
+    //         'data' => $inventoryItem,
+    //     ], 201);
+    // }
+
+    /**
+     * Store a new inventory item with initial stock.
+     */
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -34,13 +56,19 @@ class InventoryItemController extends Controller
             'item_name' => 'required|string|max:150',
             'category' => 'required|in:SPAREPART,TONER',
             'unit' => 'nullable|string|max:30',
+
+            // Initial stock
+            'transaction_date' => 'required|date',
+            'quantity' => 'required|integer|min:0',
+            'note' => 'nullable|string|max:255',
         ]);
 
-        $inventoryItem = $this->inventoryItemService->createInventoryItem($validated);
+        $inventoryItem = $this->inventoryItemService
+            ->createInventoryItemWithStock($validated);
 
         return response()->json([
             'success' => true,
-            'message' => 'Inventory item created successfully.',
+            'message' => 'Inventory item created successfully with initial stock.',
             'data' => $inventoryItem,
         ], 201);
     }

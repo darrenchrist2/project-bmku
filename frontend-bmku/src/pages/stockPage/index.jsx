@@ -21,7 +21,7 @@ import {
     PackageSearch,
 } from 'lucide-react';
 import './style.css';
-import { getCurrentStocks, createInventoryItem, stockIn } from './funcAPICall';
+import { getCurrentStocks, createInventoryItem } from './funcAPICall';
 import GeneralModal from '../../components/generalModal';
 
 const JENIS_CONFIG = {
@@ -98,13 +98,45 @@ export default function StockPage() {
         },
     ];
 
-    const handleSubmit = () => {
-        console.log(formValues);
+    const handleSubmit = async () => {
+        const payload = {
+            item_code: `ITM-${Date.now()}`,
+            item_name: formValues.item_name,
+            category: formValues.category,
+            unit: "PCS",
+            quantity: Number(formValues.quantity),
+            transaction_date: new Date()
+                .toISOString()
+                .split("T")[0],
+            note: "Initial Stock",
+        };
 
-        // nanti panggil API create item
-        // await createInventoryItem(formValues);
+        const result = await createInventoryItem(payload);
 
-        toggleModal();
+        if (result.success) {
+
+            // refresh tabel
+            await loadInventoryItems();
+
+            // reset form
+            setFormValues({
+                item_name: "",
+                category: "",
+                quantity: "",
+            });
+
+            setFormErrors({});
+
+            toggleModal();
+        } else {
+
+            // validation Laravel
+            if (result.errors) {
+                setFormErrors(result.errors);
+            }
+
+            alert(result.message);
+        }
     };
 
     useEffect(() => {

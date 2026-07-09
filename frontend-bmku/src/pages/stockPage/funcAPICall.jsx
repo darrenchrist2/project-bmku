@@ -43,3 +43,26 @@ export async function getCurrentStocks() {
         };
     }
 }
+
+export async function createInventoryItem(data) {
+    try {
+        const response = await api.post("/inventory-items", data);
+
+        return {
+            success: true,
+            data: response.data.data,
+            message: response.data.message,
+        };
+    } catch (error) {
+        console.error("Failed to create inventory item:", error);
+
+        return {
+            success: false,
+            data: null,
+            errors: error.response?.data?.errors ?? {},
+            message:
+                error.response?.data?.message ||
+                "Failed to create inventory item.",
+        };
+    }
+}
