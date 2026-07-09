@@ -18,6 +18,7 @@ Route::prefix('inventory-transactions')->group(function () {
     Route::post('/stock-out', [InventoryTransactionController::class, 'stockOut']);
 
     Route::get('/current-stock/{itemId}', [InventoryTransactionController::class, 'currentStock']);
+    Route::get('/current-stocks', [InventoryTransactionController::class, 'currentStocks']);
 
     Route::get('/monthly-report', [InventoryTransactionController::class, 'monthlyReport']);
 

@@ -87,6 +87,49 @@ class InventoryTransactionService
     }
 
     /**
+     * Hitung stok saat ini (semua barang).
+     */
+    public function getCurrentStocks(): Collection
+    {
+        return InventoryItem::select(
+                'inventory_items.id',
+                'inventory_items.item_code',
+                'inventory_items.item_name',
+                'inventory_items.category',
+                'inventory_items.unit'
+            )
+            ->selectRaw("
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN inventory_transactions.transaction_type = 'IN'
+                            THEN inventory_transactions.quantity
+                            WHEN inventory_transactions.transaction_type = 'OUT'
+                            THEN -inventory_transactions.quantity
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) AS current_stock
+            ")
+            ->leftJoin(
+                'inventory_transactions',
+                'inventory_items.id',
+                '=',
+                'inventory_transactions.item_id'
+            )
+            ->groupBy(
+                'inventory_items.id',
+                'inventory_items.item_code',
+                'inventory_items.item_name',
+                'inventory_items.category',
+                'inventory_items.unit'
+            )
+            ->orderBy('inventory_items.item_name')
+            ->get();
+    }
+
+    /**
      * Laporan stok bulanan.
      */
     public function getMonthlyStockReport(

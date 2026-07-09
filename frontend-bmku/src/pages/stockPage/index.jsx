@@ -21,7 +21,7 @@ import {
     PackageSearch,
 } from 'lucide-react';
 import './style.css';
-import {getInventoryItems} from './funcAPICall';
+import {getCurrentStocks} from './funcAPICall';
 
 const JENIS_CONFIG = {
     TONER: {
@@ -50,7 +50,7 @@ export default function StockPage() {
         try {
             setLoading(true);
 
-            const result = await getInventoryItems();
+            const result = await getCurrentStocks();
 
             if (result.success) {
                 setStockData(result.data);
@@ -162,7 +162,7 @@ export default function StockPage() {
                                                         {item.category}
                                                     </Badge>
                                                 </td>
-                                                <td className="sp-col-center sp-jumlah">{item.unit}</td>
+                                                <td className="sp-col-center sp-jumlah">{item.current_stock} {item.unit}</td>
                                                 <td className="sp-col-center">
                                                     <Button
                                                         id={`edit-btn-${item.id}`}

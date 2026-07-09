@@ -102,6 +102,18 @@ class InventoryTransactionController extends Controller
     }
 
     /**
+     * Current stock of all items.
+     */
+    public function currentStocks(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Current stocks retrieved successfully.',
+            'data' => $this->inventoryTransactionService->getCurrentStocks(),
+        ]);
+    }
+
+    /**
      * Monthly stock report.
      */
     public function monthlyReport(Request $request): JsonResponse
