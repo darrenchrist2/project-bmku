@@ -1,0 +1,284 @@
+/* ReusableModal — "Modern White" theme
+   Fonts: Manrope (display) + Work Sans (body), indigo accent.
+   Mobile-first: base styles target small screens, wider layout kicks in
+   from 576px up (reactstrap's sm breakpoint). */
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Work+Sans:wght@400;500;600&display=swap');
+
+:root {
+    --rm-ink: #16181d;
+    --rm-ink-soft: #6b7280;
+    --rm-line: #e8e9ed;
+    --rm-surface: #ffffff;
+    --rm-surface-tint: #fafafb;
+    --rm-accent: #4f46e5;
+    --rm-accent-soft: #eef0fd;
+    --rm-danger: #dc2626;
+    --rm-radius-lg: 20px;
+    --rm-radius-md: 12px;
+    --rm-shadow: 0 30px 60px -20px rgba(22, 24, 29, 0.28), 0 8px 24px -8px rgba(22, 24, 29, 0.12);
+}
+
+/* Backdrop: soft blur instead of flat black */
+.rm-backdrop.modal-backdrop {
+    background-color: rgba(20, 21, 26, 0.45);
+    backdrop-filter: blur(3px);
+    opacity: 1 !important;
+}
+
+.rm-modal-wrapper {
+    padding: 0 14px;
+}
+
+.rm-content.modal-content {
+    border: none;
+    border-radius: var(--rm-radius-lg);
+    box-shadow: var(--rm-shadow);
+    overflow: hidden;
+    font-family: 'Work Sans', sans-serif;
+    animation: rm-pop 0.28s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@keyframes rm-pop {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ---------- Header ---------- */
+.rm-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 20px 18px;
+    border-bottom: 1px solid var(--rm-line);
+    background: var(--rm-surface-tint);
+}
+
+.rm-title {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+    color: var(--rm-ink);
+    margin: 0;
+}
+
+.rm-subtitle {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: var(--rm-ink-soft);
+}
+
+.rm-close-btn {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid var(--rm-line);
+    background: var(--rm-surface);
+    color: var(--rm-ink-soft);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.rm-close-btn:hover:not(:disabled) {
+    background: var(--rm-ink);
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+.rm-close-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ---------- Body / fields ---------- */
+.rm-body {
+    padding: 20px;
+    background: var(--rm-surface);
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.rm-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+@media (min-width: 576px) {
+    .rm-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 18px 16px;
+    }
+
+    .rm-field-full {
+        grid-column: 1 / -1;
+    }
+}
+
+.rm-field {
+    margin: 0;
+    animation: rm-rise 0.3s ease both;
+    animation-delay: var(--rm-delay, 0ms);
+}
+
+@keyframes rm-rise {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.rm-label {
+    display: block;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--rm-ink);
+    margin-bottom: 6px;
+}
+
+.rm-required {
+    color: var(--rm-accent);
+    margin-left: 3px;
+}
+
+.rm-grid .form-control,
+.rm-grid select.form-control {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--rm-ink);
+    background: var(--rm-surface-tint);
+    border: 1.5px solid var(--rm-line);
+    border-radius: var(--rm-radius-md);
+    padding: 10px 12px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.rm-grid .form-control:focus {
+    background: var(--rm-surface);
+    border-color: var(--rm-accent);
+    box-shadow: 0 0 0 4px var(--rm-accent-soft);
+    outline: none;
+}
+
+.rm-grid .form-control.is-invalid {
+    border-color: var(--rm-danger);
+}
+
+.rm-feedback-text {
+    margin-top: 5px;
+    font-size: 0.78rem;
+    color: var(--rm-danger);
+    display: block;
+}
+
+.rm-help-text {
+    margin-top: 5px;
+    font-size: 0.78rem;
+    color: var(--rm-ink-soft);
+}
+
+.rm-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding-top: 4px;
+}
+
+.rm-checkbox-row input[type='checkbox'] {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--rm-accent);
+    margin: 0;
+}
+
+.rm-checkbox-label {
+    font-size: 0.88rem;
+    color: var(--rm-ink);
+    margin: 0;
+    cursor: pointer;
+}
+
+/* ---------- Footer ---------- */
+.rm-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--rm-line);
+    background: var(--rm-surface-tint);
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 8px;
+}
+
+@media (min-width: 480px) {
+    .rm-footer {
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+}
+
+.rm-btn {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    border-radius: var(--rm-radius-md);
+    padding: 10px 20px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
+}
+
+.rm-btn-ghost {
+    background: var(--rm-surface);
+    color: var(--rm-ink-soft);
+    border: 1.5px solid var(--rm-line);
+}
+
+.rm-btn-ghost:hover:not(:disabled) {
+    background: var(--rm-line);
+    color: var(--rm-ink);
+}
+
+.rm-btn-primary {
+    background: var(--rm-accent);
+    color: #fff;
+    box-shadow: 0 10px 20px -8px rgba(79, 70, 229, 0.55);
+}
+
+.rm-btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 24px -8px rgba(79, 70, 229, 0.6);
+}
+
+.rm-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.rm-spinner {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+}

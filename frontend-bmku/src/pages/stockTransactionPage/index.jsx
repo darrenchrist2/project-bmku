@@ -58,7 +58,7 @@ function formatTanggal(isoDate) {
     });
 }
 
-export default function StockPage() {
+export default function StockTransactionPage() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [jenisFilter, setJenisFilter] = useState('Semua');

@@ -21,7 +21,8 @@ import {
     PackageSearch,
 } from 'lucide-react';
 import './style.css';
-import {getCurrentStocks} from './funcAPICall';
+import { getCurrentStocks, createInventoryItem, stockIn } from './funcAPICall';
+import GeneralModal from '../../components/generalModal';
 
 const JENIS_CONFIG = {
     TONER: {
@@ -41,6 +42,70 @@ export default function StockPage() {
 
     const [stockData, setStockData] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const toggleModal = () => {
+        setIsModalOpen(!isModalOpen);
+    };
+
+    const [formValues, setFormValues] = useState({
+        item_name: '',
+        category: '',
+        quantity: '',
+    });
+
+    const [formErrors, setFormErrors] = useState({});
+
+    const handleChange = (name, value) => {
+        setFormValues((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const modalFields = [
+        {
+            name: 'item_name',
+            label: 'Nama Barang',
+            type: 'text',
+            required: true,
+            placeholder: 'Masukkan nama barang',
+        },
+        {
+            name: 'category',
+            label: 'Kategori',
+            type: 'select',
+            required: true,
+            placeholder: 'Pilih kategori',
+            options: [
+                {
+                    value: 'TONER',
+                    label: 'Toner',
+                },
+                {
+                    value: 'SPAREPART',
+                    label: 'Spare Part',
+                },
+            ],
+        },
+        {
+            name: 'quantity',
+            label: 'Jumlah',
+            type: 'text',
+            required: true,
+            placeholder: 'cth: 10',
+        },
+    ];
+
+    const handleSubmit = () => {
+        console.log(formValues);
+
+        // nanti panggil API create item
+        // await createInventoryItem(formValues);
+
+        toggleModal();
+    };
 
     useEffect(() => {
         loadInventoryItems();
@@ -92,7 +157,7 @@ export default function StockPage() {
                         <Button color="primary" className="sp-btn-add sp-btn-list" onClick={() => navigate('/spare-part-toner')}>
                             <span>Kembali</span>
                         </Button>
-                        <Button color="primary" className="sp-btn-add">
+                        <Button color="primary" className="sp-btn-add" onClick={toggleModal}>
                             <Plus size={18} strokeWidth={2.25} />
                             <span>Tambah Barang</span>
                         </Button>
@@ -187,6 +252,19 @@ export default function StockPage() {
                     </CardBody>
                 </Card>
             </Container>
+
+            <GeneralModal
+                isOpen={isModalOpen}
+                toggle={toggleModal}
+                title="Tambah Barang"
+                subtitle="Tambahkan data barang baru."
+                fields={modalFields}
+                values={formValues}
+                errors={formErrors}
+                onChange={handleChange}
+                onSubmit={handleSubmit}
+                submitLabel="Simpan"
+            />
         </div>
     );
 }
