@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from './components/sidebar';
-import StockPage from './pages/stockPage';
+import StockTransactionPage from './pages/stockTransactionPage';
 import { ROUTES } from './navigation';
 
 export default function App() {
@@ -12,8 +12,8 @@ export default function App() {
 
       <main className="app-content">
         <Routes>
-          <Route path="/" element={<Navigate to={ROUTES.stok} replace />} />
-          <Route path={ROUTES.stok} element={<StockPage />} />
+          <Route path="/" element={<Navigate to={ROUTES.spare_part_toner} replace />} />
+          <Route path={ROUTES.spare_part_toner} element={<StockTransactionPage />} />
           <Route
             path={ROUTES.maintenance}
             element={(
@@ -28,6 +28,15 @@ export default function App() {
             element={(
               <div className="page-placeholder">
                 <h1>Penggunaan Stok oleh Teknisi</h1>
+                <p>Halaman ini belum dibuat.</p>
+              </div>
+            )}
+          />
+          <Route
+            path={ROUTES.stockPage}
+            element={(
+              <div className="page-placeholder">
+                <h1>Stok Terkini</h1>
                 <p>Halaman ini belum dibuat.</p>
               </div>
             )}

@@ -70,7 +70,9 @@ export default function Sidebar({ activeKey, onNavigate }) {
 
                 <OffcanvasBody className="sb-body">
                     <Nav vertical className="sb-nav">
-                        {NAV_ITEMS.map((item) => {
+                        {NAV_ITEMS
+                        .filter((item) => item.key !== 'stock_page')
+                        .map((item) => {
                             const Icon = item.icon;
                             return (
                                 <NavItem key={item.key} className="sb-nav__item">

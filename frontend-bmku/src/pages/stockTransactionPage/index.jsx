@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Container,
     Card,
@@ -58,6 +59,7 @@ function formatTanggal(isoDate) {
 }
 
 export default function StockPage() {
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [jenisFilter, setJenisFilter] = useState('Semua');
 
@@ -88,13 +90,13 @@ export default function StockPage() {
                         </p>
                     </div>
                     <div className="sp-actions">
-                        <Button color="primary" className="sp-btn-add sp-btn-list">
-                            <span>Daftar Barang</span>
+                        <Button color="primary" className="sp-btn-add sp-btn-list" onClick={() => navigate('/stock-page')}>
+                            <span>Stok Terkini</span>
                         </Button>
 
                         <Button color="primary" className="sp-btn-add">
                             <Plus size={18} strokeWidth={2.25} />
-                            <span>Tambah Stok</span>
+                            <span>Tambah Mutasi</span>
                         </Button>
                     </div>
                 </div>
@@ -135,7 +137,7 @@ export default function StockPage() {
                                         <th>Tanggal</th>
                                         <th>Nama Barang</th>
                                         <th>Jenis Barang</th>
-                                        <th className="sp-col-center">Jumlah Stok</th>
+                                        <th className="sp-col-center">Jumlah</th>
                                         <th className="sp-col-center">Aksi</th>
                                     </tr>
                                 </thead>

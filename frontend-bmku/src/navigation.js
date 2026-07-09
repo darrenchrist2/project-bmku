@@ -1,17 +1,18 @@
-import { Printer, Wrench, FileBarChart2 } from 'lucide-react';
+import { Printer, Wrench, FileBarChart2, Package } from 'lucide-react';
 
 export const ROUTES = {
-    stok: '/stok-spare-part-toner',
+    spare_part_toner: '/spare-part-toner',
     maintenance: '/riwayat-perbaikan-mesin',
     stockUsage: '/penggunaan-stok-teknisi',
+    stockPage: '/stock-page',
 };
 
 export const NAV_ITEMS = [
     {
         key: 'spare_part_toner',
-        label: 'Stok Spare Part & Toner',
+        label: 'Spare Part & Toner',
         icon: Printer,
-        path: ROUTES.stok,
+        path: ROUTES.spare_part_toner,
     },
     {
         key: 'maintenance',
@@ -25,4 +26,11 @@ export const NAV_ITEMS = [
         icon: FileBarChart2,
         path: ROUTES.stockUsage,
     },
+    {
+        key: 'stock_page',
+        label: 'Stok Terkini',
+        icon: Package,
+        path: ROUTES.stockPage,
+    }
+    
 ];
