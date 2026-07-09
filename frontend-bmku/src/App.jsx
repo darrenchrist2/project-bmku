@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from './components/sidebar';
 import StockTransactionPage from './pages/stockTransactionPage';
+import StockPage from './pages/stockPage';
 import { ROUTES } from './navigation';
 
 export default function App() {
@@ -34,12 +35,7 @@ export default function App() {
           />
           <Route
             path={ROUTES.stockPage}
-            element={(
-              <div className="page-placeholder">
-                <h1>Stok Terkini</h1>
-                <p>Halaman ini belum dibuat.</p>
-              </div>
-            )}
+            element={<StockPage />}
           />
           <Route
             path="*"

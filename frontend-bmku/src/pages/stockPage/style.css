@@ -1,0 +1,333 @@
+/* ==========================================================================
+   StockPage.css - Tema "Modern White" untuk halaman Stok Spare Part & Toner
+   Karakter: kartu putih bersih, shadow lembut, aksen indigo, badge berwarna.
+   Font: Manrope (judul/UI) + Work Sans (body/tabel).
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Work+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --sp-bg: #f6f7f9;
+  --sp-card-bg: #ffffff;
+  --sp-border: #e9eaee;
+  --sp-text: #1f2229;
+  --sp-text-dim: #767a85;
+  --sp-primary: #4c5cf0;
+  --sp-primary-dark: #3944c9;
+  --sp-toner-bg: #eef0ff;
+  --sp-toner-text: #4c5cf0;
+  --sp-sparepart-bg: #fff4e2;
+  --sp-sparepart-text: #b6790a;
+  --sp-success: #1fa871;
+  --sp-danger: #e0574f;
+  --sp-font-display: 'Manrope', 'Segoe UI', sans-serif;
+  --sp-font-body: 'Work Sans', 'Segoe UI', sans-serif;
+}
+
+.sp-page {
+  min-height: 100vh;
+  background: var(--sp-bg);
+  font-family: var(--sp-font-body);
+  color: var(--sp-text);
+  /* padding-top diberi ruang ekstra supaya tidak tertindih tombol
+     hamburger (.sb-toggle-btn) milik Sidebar yang bersifat fixed
+     top-left di atas seluruh konten. Nilai disesuaikan dengan posisi
+     tombol per breakpoint di sidebar.css agar konsisten. */
+  padding: 76px 0 48px;
+}
+
+.sp-container {
+  max-width: 1180px;
+}
+
+/* --------------------------------------------------------------------
+   Page header
+   -------------------------------------------------------------------- */
+.sp-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 4px 4px 0;
+}
+
+.sp-title {
+  font-family: var(--sp-font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--sp-text);
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+
+.sp-subtitle {
+  font-size: 13.5px;
+  color: var(--sp-text-dim);
+  margin: 0;
+}
+
+.sp-btn-add {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--sp-primary);
+  border: none;
+  font-family: var(--sp-font-display);
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(76, 92, 240, 0.28);
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sp-btn-add:hover,
+.sp-btn-add:focus {
+  background: var(--sp-primary-dark) !important;
+  box-shadow: 0 8px 20px rgba(76, 92, 240, 0.34);
+}
+
+.sp-btn-add:active {
+  transform: translateY(1px);
+}
+
+.sp-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* ubah menjadi 6px atau 4px jika ingin lebih rapat */
+}
+
+.sp-btn-list {
+  background: #fff;
+  color: var(--sp-text);
+  border: 1px solid var(--sp-border);
+  box-shadow: none;
+}
+
+.sp-btn-list:hover,
+.sp-btn-list:focus {
+  background: #f7f8fa !important;
+  border-color: #d7dbe4 !important;
+  color: var(--sp-text) !important;
+}
+
+/* --------------------------------------------------------------------
+   Card & toolbar
+   -------------------------------------------------------------------- */
+.sp-card {
+  border: 1px solid var(--sp-border);
+  border-radius: 16px;
+  box-shadow: 0 2px 4px rgba(20, 22, 30, 0.03), 0 12px 28px rgba(20, 22, 30, 0.06);
+  background: var(--sp-card-bg);
+}
+
+.sp-card-body {
+  padding: 20px 20px 8px;
+}
+
+.sp-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.sp-search {
+  box-shadow: none;
+}
+
+.sp-search .sp-search__icon {
+  background: #fff;
+  border: 1px solid var(--sp-border);
+  border-right: none;
+  color: var(--sp-text-dim);
+}
+
+.sp-search .form-control {
+  border: 1px solid var(--sp-border);
+  border-left: none;
+  font-size: 13.5px;
+  font-family: var(--sp-font-body);
+}
+
+.sp-search .form-control:focus {
+  box-shadow: none;
+  border-color: var(--sp-border);
+}
+
+.sp-filter {
+  max-width: 200px;
+  font-size: 13.5px;
+  font-family: var(--sp-font-body);
+  border: 1px solid var(--sp-border);
+  border-radius: 8px;
+  color: var(--sp-text);
+}
+
+.sp-filter:focus {
+  box-shadow: none;
+  border-color: var(--sp-primary);
+}
+
+/* --------------------------------------------------------------------
+   Table
+   -------------------------------------------------------------------- */
+.sp-table-wrap {
+  overflow-x: auto;
+}
+
+.sp-table {
+  margin-bottom: 0;
+}
+
+.sp-table thead th {
+  font-family: var(--sp-font-display);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--sp-text-dim);
+  border-bottom: 1px solid var(--sp-border) !important;
+  padding: 10px 14px 12px;
+  white-space: nowrap;
+}
+
+.sp-table tbody td {
+  padding: 14px;
+  font-size: 13.5px;
+  border-bottom: 1px solid var(--sp-border);
+  vertical-align: middle;
+  color: var(--sp-text);
+}
+
+.sp-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.sp-table tbody tr {
+  transition: background 0.12s ease;
+}
+
+.sp-table tbody tr:hover {
+  background: #fafbfd;
+}
+
+.sp-col-center {
+  text-align: center;
+}
+
+.sp-nama {
+  font-weight: 600;
+  color: var(--sp-text);
+}
+
+.sp-jumlah {
+  font-family: var(--sp-font-display);
+  font-weight: 700;
+}
+
+.sp-tanggal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sp-text-dim);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.sp-icon-masuk {
+  color: var(--sp-success);
+}
+
+.sp-icon-keluar {
+  color: var(--sp-danger);
+}
+
+/* Badge jenis barang */
+.sp-badge {
+  font-family: var(--sp-font-body);
+  font-weight: 600;
+  font-size: 11.5px;
+  padding: 5px 12px;
+  border: none;
+}
+
+.sp-badge--toner {
+  background: var(--sp-toner-bg) !important;
+  color: var(--sp-toner-text) !important;
+}
+
+.sp-badge--sparepart {
+  background: var(--sp-sparepart-bg) !important;
+  color: var(--sp-sparepart-text) !important;
+}
+
+/* Tombol edit (pensil) */
+.sp-btn-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid var(--sp-border) !important;
+  background: #fff !important;
+  color: var(--sp-text-dim) !important;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.sp-btn-edit:hover {
+  color: var(--sp-primary) !important;
+  border-color: var(--sp-primary) !important;
+  background: var(--sp-toner-bg) !important;
+}
+
+/* Empty state */
+.sp-empty {
+  text-align: center;
+  padding: 48px 16px !important;
+  color: var(--sp-text-dim);
+}
+
+.sp-empty svg {
+  display: block;
+  margin: 0 auto 8px;
+  color: #c7cad3;
+}
+
+/* --------------------------------------------------------------------
+   Responsive - mulai dari mobile, melebar di layar besar
+   -------------------------------------------------------------------- */
+@media (min-width: 576px) {
+  .sp-page-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* .sp-btn-add {
+    align-self: center;
+  } */
+
+  .sp-toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sp-search {
+    max-width: 320px;
+  }
+}
+
+@media (min-width: 992px) {
+  .sp-title {
+    font-size: 25px;
+  }
+
+  .sp-card-body {
+    padding: 24px 24px 10px;
+  }
+}
