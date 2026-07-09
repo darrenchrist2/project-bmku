@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Container,
@@ -23,56 +23,54 @@ import {
 import './style.css';
 import {getInventoryItems} from './funcAPICall';
 
-/**
- * StockPage - Halaman "Stok Spare Part & Toner".
- *
- * Tema: Modern White - kartu putih dengan shadow lembut, aksen warna
- * indigo untuk aksi utama, badge berwarna untuk membedakan jenis barang.
- * Sengaja dibuat berbeda arah visual dari Sidebar (industrial) karena
- * area konten halaman & shell navigasi memang punya peran berbeda.
- *
- * Data di bawah ini seluruhnya dummy - hanya untuk kebutuhan tampilan.
- */
-
 const JENIS_CONFIG = {
-    Toner: { color: 'primary', className: 'sp-badge--toner' },
-    'Spare Part': { color: 'warning', className: 'sp-badge--sparepart' },
+    TONER: {
+        color: "primary",
+        className: "sp-badge--toner",
+    },
+    SPAREPART: {
+        color: "warning",
+        className: "sp-badge--sparepart",
+    },
 };
-
-const DUMMY_STOCK = [
-    { id: 1, tanggal: '2026-07-08', tipeMutasi: 'masuk', nama: 'Toner HP LaserJet 26A', jenis: 'Toner', jumlah: 24 },
-    { id: 2, tanggal: '2026-07-07', tipeMutasi: 'keluar', nama: 'Drum Unit Canon LBP2900', jenis: 'Spare Part', jumlah: 3 },
-    { id: 3, tanggal: '2026-07-06', tipeMutasi: 'masuk', nama: 'Toner Brother TN-2130', jenis: 'Toner', jumlah: 15 },
-    { id: 4, tanggal: '2026-07-05', tipeMutasi: 'keluar', nama: 'Roller Feed Epson L3110', jenis: 'Spare Part', jumlah: 6 },
-    { id: 5, tanggal: '2026-07-04', tipeMutasi: 'masuk', nama: 'Toner Samsung MLT-D111S', jenis: 'Toner', jumlah: 18 },
-    { id: 6, tanggal: '2026-07-03', tipeMutasi: 'masuk', nama: 'Cartridge Head Canon G2010', jenis: 'Spare Part', jumlah: 10 },
-    { id: 7, tanggal: '2026-07-02', tipeMutasi: 'keluar', nama: 'Toner HP LaserJet 12A', jenis: 'Toner', jumlah: 5 },
-    { id: 8, tanggal: '2026-07-01', tipeMutasi: 'keluar', nama: 'Fuser Unit Brother HL-2270', jenis: 'Spare Part', jumlah: 2 },
-];
-
-function formatTanggal(isoDate) {
-    const date = new Date(`${isoDate}T00:00:00`);
-    return date.toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
-}
 
 export default function StockPage() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [jenisFilter, setJenisFilter] = useState('Semua');
 
+    const [stockData, setStockData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadInventoryItems();
+    }, []);
+
+    const loadInventoryItems = async () => {
+        try {
+            setLoading(true);
+
+            const result = await getInventoryItems();
+
+            if (result.success) {
+                setStockData(result.data);
+            } else {
+                alert(result.message);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const filteredData = useMemo(() => {
-        return DUMMY_STOCK.filter((item) => {
-            const matchSearch = item.nama
+        return stockData.filter((item) => {
+            const matchSearch = item.item_name
                 .toLowerCase()
                 .includes(searchTerm.trim().toLowerCase());
-            const matchJenis = jenisFilter === 'Semua' || item.jenis === jenisFilter;
+            const matchJenis = jenisFilter === 'Semua' || item.category === jenisFilter;
             return matchSearch && matchJenis;
         });
-    }, [searchTerm, jenisFilter]);
+    }, [stockData, searchTerm, jenisFilter]);
 
     const handleEdit = (item) => {
         // Integrasikan dengan modal/route edit di implementasi sebenarnya.
@@ -122,8 +120,8 @@ export default function StockPage() {
                                 aria-label="Filter jenis barang"
                             >
                                 <option value="Semua">Semua Jenis</option>
-                                <option value="Toner">Toner</option>
-                                <option value="Spare Part">Spare Part</option>
+                                <option value="TONER">Toner</option>
+                                <option value="SPAREPART">Spare Part</option>
                             </Input>
                         </div>
 
@@ -148,21 +146,20 @@ export default function StockPage() {
                                     )}
 
                                     {filteredData.map((item) => {
-                                        const isMasuk = item.tipeMutasi === 'masuk';
-                                        const jenisCfg = JENIS_CONFIG[item.jenis];
+                                        const jenisCfg = JENIS_CONFIG[item.category];
                                         return (
                                             <tr key={item.id}>
-                                                <td className="sp-nama">{item.nama}</td>
+                                                <td className="sp-nama">{item.item_name}</td>
                                                 <td>
                                                     <Badge
                                                         pill
                                                         color={jenisCfg.color}
                                                         className={`sp-badge ${jenisCfg.className}`}
                                                     >
-                                                        {item.jenis}
+                                                        {item.category}
                                                     </Badge>
                                                 </td>
-                                                <td className="sp-col-center sp-jumlah">{item.jumlah}</td>
+                                                <td className="sp-col-center sp-jumlah">{item.unit}</td>
                                                 <td className="sp-col-center">
                                                     <Button
                                                         id={`edit-btn-${item.id}`}
