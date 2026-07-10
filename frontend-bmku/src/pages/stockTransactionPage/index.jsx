@@ -136,8 +136,8 @@ export default function StockTransactionPage() {
                                 aria-label="Filter jenis barang"
                             >
                                 <option value="Semua">Semua Jenis</option>
-                                <option value="Toner">Toner</option>
-                                <option value="Spare Part">Spare Part</option>
+                                <option value="TONER">Toner</option>
+                                <option value="SPAREPART">Spare Part</option>
                             </Input>
                         </div>
 
@@ -178,7 +178,6 @@ export default function StockTransactionPage() {
                                     )}
 
                                     {filteredData.map((item) => {
-                                        const isMasuk = item.tipeMutasi === 'masuk';
                                         return (
                                             <tr key={item.id}>
                                                 <td className="sp-nama">
