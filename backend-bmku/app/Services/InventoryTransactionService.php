@@ -139,8 +139,9 @@ class InventoryTransactionService
 
         return InventoryItem::select(
                 'inventory_items.id',
-                'item_name',
-                'item_code'
+                'inventory_items.item_name',
+                'inventory_items.item_code',
+                'inventory_items.category'
             )
             ->selectRaw("
                 SUM(
@@ -176,8 +177,9 @@ class InventoryTransactionService
             )
             ->groupBy(
                 'inventory_items.id',
-                'item_name',
-                'item_code'
+                'inventory_items.item_name',
+                'inventory_items.item_code',
+                'inventory_items.category'
             )
             ->get();
     }
