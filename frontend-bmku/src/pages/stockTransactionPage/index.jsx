@@ -22,6 +22,7 @@ import {
     ArrowDownCircle,
     ArrowUpCircle,
     PackageSearch,
+    Eye,
 } from 'lucide-react';
 import './style.css';
 import { getMonthlyReport } from './funcAPICall';
@@ -97,6 +98,15 @@ export default function StockTransactionPage() {
         // Integrasikan dengan modal/route edit di implementasi sebenarnya.
         // eslint-disable-next-line no-console
         console.log('Edit stok:', item);
+    };
+
+    const handleDetail = (item) => {
+        console.log("Detail stok:", item);
+
+        // Contoh jika ingin pindah halaman
+        // navigate(`/stock-transaction/${item.id}`);
+
+        // atau buka modal detail
     };
 
     const MONTHS = [
@@ -267,19 +277,38 @@ export default function StockTransactionPage() {
                                                 </td>
 
                                                 <td className="sp-col-center">
-                                                    <Button
-                                                        id={`edit-btn-${item.id}`}
-                                                        color="light"
-                                                        size="sm"
-                                                        className="sp-btn-edit"
-                                                        onClick={() => handleEdit(item)}
-                                                        aria-label={`Edit stok ${item.nama}`}
-                                                    >
-                                                        <Pencil size={15} strokeWidth={2} />
-                                                    </Button>
-                                                    <UncontrolledTooltip target={`edit-btn-${item.id}`} placement="top">
-                                                        Edit
-                                                    </UncontrolledTooltip>
+                                                    <div className="d-flex justify-content-center gap-2">
+                                                        <Button
+                                                            id={`detail-btn-${item.id}`}
+                                                            color="info"
+                                                            size="sm"
+                                                            className="sp-btn-edit"
+                                                            onClick={() => handleDetail(item)}
+                                                            aria-label={`Detail ${item.item_name}`}
+                                                        >
+                                                            <Eye size={15} strokeWidth={2} />
+                                                        </Button>
+
+                                                        <UncontrolledTooltip
+                                                            target={`detail-btn-${item.id}`}
+                                                            placement="top"
+                                                        >
+                                                            Detail
+                                                        </UncontrolledTooltip>
+                                                        <Button
+                                                            id={`edit-btn-${item.id}`}
+                                                            color="light"
+                                                            size="sm"
+                                                            className="sp-btn-edit"
+                                                            onClick={() => handleEdit(item)}
+                                                            aria-label={`Edit stok ${item.nama}`}
+                                                        >
+                                                            <Pencil size={15} strokeWidth={2} />
+                                                        </Button>
+                                                        <UncontrolledTooltip target={`edit-btn-${item.id}`} placement="top">
+                                                            Edit
+                                                        </UncontrolledTooltip>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         );
