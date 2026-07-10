@@ -12,6 +12,9 @@ import {
     Badge,
     UncontrolledTooltip,
     Spinner,
+    Pagination,
+    PaginationItem,
+    PaginationLink,
 } from 'reactstrap';
 import {
     Search,
@@ -49,6 +52,9 @@ export default function StockPage() {
 
     const [stockData, setStockData] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pagination, setPagination] = useState(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("add"); // add | edit
@@ -169,7 +175,7 @@ export default function StockPage() {
             const result = await createInventoryItem(payload);
 
             if (result.success) {
-                await loadInventoryItems();
+                await loadInventoryItems(currentPage);
                 toast.success(result.message);
 
                 setFormValues({
@@ -209,7 +215,7 @@ export default function StockPage() {
             );
 
             if (result.success) {
-                await loadInventoryItems();
+                await loadInventoryItems(currentPage);
                 toast.success(result.message);
                 setFormValues({
                     item_name: "",
@@ -232,19 +238,19 @@ export default function StockPage() {
     };
 
     useEffect(() => {
-        loadInventoryItems();
-    }, []);
+        loadInventoryItems(currentPage);
+    }, [currentPage]);
 
-    const loadInventoryItems = async () => {
+    const loadInventoryItems = async (page = currentPage) => {
         try {
             setLoading(true);
 
-            const result = await getCurrentStocks();
+            const result = await getCurrentStocks(page);
 
             if (result.success) {
                 setStockData(result.data);
+                setPagination(result.pagination);
             } else {
-                // alert(result.message);
                 toast.error(result.message);
             }
         } finally {
@@ -287,7 +293,7 @@ export default function StockPage() {
             const result = await deleteInventoryItem(id);
 
             if (result.success) {
-                await loadInventoryItems();
+                await loadInventoryItems(currentPage);
                 toast.success(result.message);
             } else {
                 toast.error(result.message);
@@ -398,7 +404,7 @@ export default function StockPage() {
                                                     <UncontrolledTooltip target={`edit-btn-${item.id}`} placement="top">
                                                         Edit
                                                     </UncontrolledTooltip>
-                                                    
+
                                                     {item.current_stock <= 0 && (
                                                         <>
                                                             <Button
@@ -431,6 +437,53 @@ export default function StockPage() {
                                     })}
                                 </tbody>
                             </Table>
+                            {pagination && pagination.last_page > 1 && (
+                                <div className="d-flex justify-content-center mt-4">
+                                    <Pagination>
+
+                                        <PaginationItem disabled={currentPage === 1}>
+                                            <PaginationLink
+                                                previous
+                                                onClick={() =>
+                                                    setCurrentPage(currentPage - 1)
+                                                }
+                                            />
+                                        </PaginationItem>
+
+                                        {Array.from(
+                                            { length: pagination.last_page },
+                                            (_, index) => (
+                                                <PaginationItem
+                                                    key={index + 1}
+                                                    active={currentPage === index + 1}
+                                                >
+                                                    <PaginationLink
+                                                        onClick={() =>
+                                                            setCurrentPage(index + 1)
+                                                        }
+                                                    >
+                                                        {index + 1}
+                                                    </PaginationLink>
+                                                </PaginationItem>
+                                            )
+                                        )}
+
+                                        <PaginationItem
+                                            disabled={
+                                                currentPage === pagination.last_page
+                                            }
+                                        >
+                                            <PaginationLink
+                                                next
+                                                onClick={() =>
+                                                    setCurrentPage(currentPage + 1)
+                                                }
+                                            />
+                                        </PaginationItem>
+
+                                    </Pagination>
+                                </div>
+                            )}
                         </div>
                     </CardBody>
                 </Card>

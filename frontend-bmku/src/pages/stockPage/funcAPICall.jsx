@@ -22,24 +22,34 @@ export async function getInventoryItems() {
     }
 }
 
-export async function getCurrentStocks() {
+export async function getCurrentStocks(page = 1) {
     try {
-        const response = await api.get("/inventory-transactions/current-stocks");
+        const response = await api.get(
+            "/inventory-transactions/current-stocks",
+            {
+                params: {
+                    page,
+                    per_page: 5,
+                },
+            }
+        );
 
         return {
             success: true,
             data: response.data.data,
+            pagination: response.data.pagination,
             message: response.data.message,
         };
     } catch (error) {
-        console.error('Failed to fetch current stocks:', error);
+        console.error(error);
 
         return {
             success: false,
             data: [],
+            pagination: null,
             message:
                 error.response?.data?.message ||
-                'Failed to fetch current stocks.',
+                "Failed to fetch current stocks.",
         };
     }
 }

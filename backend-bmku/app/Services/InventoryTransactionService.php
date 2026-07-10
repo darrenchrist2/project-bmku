@@ -88,7 +88,9 @@ class InventoryTransactionService
     /**
      * Hitung stok saat ini (semua barang).
      */
-    public function getCurrentStocks(): Collection
+    public function getCurrentStocks(
+        int $perPage = 5
+    ): LengthAwarePaginator
     {
         return InventoryItem::select(
                 'inventory_items.id',
@@ -125,7 +127,7 @@ class InventoryTransactionService
                 'inventory_items.unit'
             )
             ->orderBy('inventory_items.item_name')
-            ->get();
+            ->paginate($perPage);
     }
 
     /**

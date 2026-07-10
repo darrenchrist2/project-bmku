@@ -105,12 +105,20 @@ class InventoryTransactionController extends Controller
     /**
      * Current stock of all items.
      */
-    public function currentStocks(): JsonResponse
+    public function currentStocks(Request $request): JsonResponse
     {
+        $stocks = $this->inventoryTransactionService->getCurrentStocks(5);
+
         return response()->json([
             'success' => true,
             'message' => 'Current stocks retrieved successfully.',
-            'data' => $this->inventoryTransactionService->getCurrentStocks(),
+            'data' => $stocks->items(),
+            'pagination' => [
+                'current_page' => $stocks->currentPage(),
+                'last_page' => $stocks->lastPage(),
+                'per_page' => $stocks->perPage(),
+                'total' => $stocks->total(),
+            ],
         ]);
     }
 
