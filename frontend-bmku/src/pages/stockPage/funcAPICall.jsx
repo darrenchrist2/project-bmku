@@ -66,3 +66,26 @@ export async function createInventoryItem(data) {
         };
     }
 }
+
+export async function updateInventoryItem(id, data) {
+    try {
+        const response = await api.put(`/inventory-items/${id}`, data);
+
+        return {
+            success: true,
+            data: response.data.data,
+            message: response.data.message,
+        };
+    } catch (error) {
+        console.error("Failed to update inventory item:", error);
+
+        return {
+            success: false,
+            data: null,
+            errors: error.response?.data?.errors ?? {},
+            message:
+                error.response?.data?.message ||
+                "Failed to update inventory item.",
+        };
+    }
+}

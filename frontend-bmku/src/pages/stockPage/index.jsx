@@ -21,7 +21,7 @@ import {
     PackageSearch,
 } from 'lucide-react';
 import './style.css';
-import { getCurrentStocks, createInventoryItem } from './funcAPICall';
+import { getCurrentStocks, createInventoryItem, updateInventoryItem } from './funcAPICall';
 import GeneralModal from '../../components/generalModal';
 
 const JENIS_CONFIG = {
@@ -46,10 +46,29 @@ export default function StockPage() {
     const [loading, setLoading] = useState(true);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState("add"); // add | edit
+    const [selectedItem, setSelectedItem] = useState(null);
 
-    const toggleModal = () => {
+    const closeModal = () => {
         if (isSubmitting) return;
-        setIsModalOpen((prev) => !prev);
+
+        setIsModalOpen(false);
+        setSelectedItem(null);
+        setModalMode("add");
+        setFormErrors({});
+    };
+
+    const openAddModal = () => {
+        setModalMode("add");
+
+        setFormValues({
+            item_name: "",
+            category: "",
+            quantity: "",
+        });
+
+        setFormErrors({});
+        setIsModalOpen(true);
     };
 
     const [formValues, setFormValues] = useState({
@@ -95,13 +114,40 @@ export default function StockPage() {
         {
             name: 'quantity',
             label: 'Jumlah',
-            type: 'text',
+            type: 'number',
             required: true,
             placeholder: 'cth: 10',
         },
     ];
 
-    const handleSubmit = async () => {
+    const editModalFields = [
+        {
+            name: "item_name",
+            label: "Nama Barang",
+            type: "text",
+            required: true,
+            placeholder: "Masukkan nama barang",
+        },
+        {
+            name: "category",
+            label: "Kategori",
+            type: "select",
+            required: true,
+            placeholder: "Pilih kategori",
+            options: [
+                {
+                    value: "TONER",
+                    label: "Toner",
+                },
+                {
+                    value: "SPAREPART",
+                    label: "Spare Part",
+                },
+            ],
+        },
+    ];
+
+    const handleCreate = async () => {
         setIsSubmitting(true);
 
         try {
@@ -110,7 +156,7 @@ export default function StockPage() {
                 item_name: formValues.item_name,
                 category: formValues.category,
                 unit: "PCS",
-                quantity: Number(formValues.quantity),
+                quantity: formValues.quantity,
                 transaction_date: new Date().toISOString().split("T")[0],
                 note: "Initial Stock",
             };
@@ -128,7 +174,42 @@ export default function StockPage() {
 
                 setFormErrors({});
 
-                toggleModal();
+                closeModal();
+            } else {
+                if (result.errors) {
+                    setFormErrors(result.errors);
+                }
+
+                alert(result.message);
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleUpdate = async () => {
+        setIsSubmitting(true);
+
+        try {
+            const payload = {
+                item_name: formValues.item_name,
+                category: formValues.category,
+            };
+
+            const result = await updateInventoryItem(
+                selectedItem.id,
+                payload
+            );
+
+            if (result.success) {
+                await loadInventoryItems();
+                setFormValues({
+                    item_name: "",
+                    category: "",
+                });
+
+                setFormErrors({});
+                closeModal();
             } else {
                 if (result.errors) {
                     setFormErrors(result.errors);
@@ -172,9 +253,16 @@ export default function StockPage() {
     }, [stockData, searchTerm, jenisFilter]);
 
     const handleEdit = (item) => {
-        // Integrasikan dengan modal/route edit di implementasi sebenarnya.
-        // eslint-disable-next-line no-console
-        console.log('Edit stok:', item);
+        setModalMode("edit");
+        setSelectedItem(item);
+
+        setFormValues({
+            item_name: item.item_name,
+            category: item.category,
+        });
+
+        setFormErrors({});
+        setIsModalOpen(true);
     };
 
     return (
@@ -191,7 +279,7 @@ export default function StockPage() {
                         <Button color="primary" className="sp-btn-add sp-btn-list" onClick={() => navigate('/spare-part-toner')}>
                             <span>Kembali</span>
                         </Button>
-                        <Button color="primary" className="sp-btn-add" onClick={toggleModal}>
+                        <Button color="primary" className="sp-btn-add" onClick={openAddModal}>
                             <Plus size={18} strokeWidth={2.25} />
                             <span>Tambah Barang</span>
                         </Button>
@@ -289,15 +377,35 @@ export default function StockPage() {
 
             <GeneralModal
                 isOpen={isModalOpen}
-                toggle={toggleModal}
-                title="Tambah Barang"
-                subtitle="Tambahkan data barang baru."
-                fields={modalFields}
+                toggle={closeModal}
+                title={
+                    modalMode === "add"
+                        ? "Tambah Barang"
+                        : "Edit Barang"
+                }
+                subtitle={
+                    modalMode === "add"
+                        ? "Tambahkan data barang baru."
+                        : "Perbarui data barang."
+                }
+                fields={
+                    modalMode === "add"
+                        ? modalFields
+                        : editModalFields
+                }
                 values={formValues}
                 errors={formErrors}
                 onChange={handleChange}
-                onSubmit={handleSubmit}
-                submitLabel="Simpan"
+                onSubmit={
+                    modalMode === "add"
+                        ? handleCreate
+                        : handleUpdate
+                }
+                submitLabel={
+                    modalMode === "add"
+                        ? "Simpan"
+                        : "Perbarui"
+                }
                 isSubmitting={isSubmitting}
             />
         </div>

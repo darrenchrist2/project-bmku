@@ -91,10 +91,10 @@ class InventoryItemController extends Controller
     public function update(Request $request, int $id): JsonResponse
     {
         $validated = $request->validate([
-            'item_code' => 'required|string|max:50|unique:inventory_items,item_code,' . $id,
+            // 'item_code' => 'required|string|max:50|unique:inventory_items,item_code,' . $id,
             'item_name' => 'required|string|max:150',
             'category' => 'required|in:SPAREPART,TONER',
-            'unit' => 'nullable|string|max:30',
+            // 'unit' => 'nullable|string|max:30',
         ]);
 
         $inventoryItem = $this->inventoryItemService->updateInventoryItem($id, $validated);
