@@ -47,16 +47,17 @@ export default function StockTransactionPage() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [jenisFilter, setJenisFilter] = useState('Semua');
+    const today = new Date();
+    const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1);
+    const [selectedYear, setSelectedYear] = useState(today.getFullYear());
 
     const [reportData, setReportData] = useState([]);
 
     useEffect(() => {
         async function loadData() {
-            const today = new Date();
-
             const result = await getMonthlyReport(
-                today.getFullYear(),
-                today.getMonth() + 1
+                selectedYear,
+                selectedMonth
             );
 
             if (result.success) {
@@ -68,7 +69,7 @@ export default function StockTransactionPage() {
         }
 
         loadData();
-    }, []);
+    }, [selectedMonth, selectedYear]);
 
     const filteredData = useMemo(() => {
         return reportData.filter((item) => {
@@ -89,6 +90,26 @@ export default function StockTransactionPage() {
         // eslint-disable-next-line no-console
         console.log('Edit stok:', item);
     };
+
+    const MONTHS = [
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember",
+    ];
+
+    const YEARS = Array.from(
+        { length: 10 },
+        (_, i) => today.getFullYear() - 5 + i
+    );
 
     return (
         <div className="sp-page">
@@ -127,6 +148,35 @@ export default function StockTransactionPage() {
                                     aria-label="Cari nama barang"
                                 />
                             </InputGroup>
+
+                            <Input
+                                type="select"
+                                className="sp-filter"
+                                value={selectedMonth}
+                                onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                            >
+                                {MONTHS.map((month, index) => (
+                                    <option
+                                        key={index + 1}
+                                        value={index + 1}
+                                    >
+                                        {month}
+                                    </option>
+                                ))}
+                            </Input>
+
+                            <Input
+                                type="select"
+                                className="sp-filter"
+                                value={selectedYear}
+                                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                            >
+                                {YEARS.map((year) => (
+                                    <option key={year} value={year}>
+                                        {year}
+                                    </option>
+                                ))}
+                            </Input>
 
                             <Input
                                 type="select"
