@@ -11,6 +11,9 @@ import {
     InputGroupText,
     Badge,
     UncontrolledTooltip,
+    Pagination,
+    PaginationItem,
+    PaginationLink,
 } from 'reactstrap';
 import {
     Search,
@@ -53,23 +56,28 @@ export default function StockTransactionPage() {
 
     const [reportData, setReportData] = useState([]);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pagination, setPagination] = useState(null);
+
     useEffect(() => {
         async function loadData() {
             const result = await getMonthlyReport(
                 selectedYear,
-                selectedMonth
+                selectedMonth,
+                currentPage
             );
 
             if (result.success) {
                 setReportData(result.data);
+                setPagination(result.pagination);
             } else {
                 setReportData([]);
-                console.error(result.message);
+                setPagination(null);
             }
         }
 
         loadData();
-    }, [selectedMonth, selectedYear]);
+    }, [selectedYear, selectedMonth, currentPage]);
 
     const filteredData = useMemo(() => {
         return reportData.filter((item) => {
@@ -153,7 +161,10 @@ export default function StockTransactionPage() {
                                 type="select"
                                 className="sp-filter"
                                 value={selectedMonth}
-                                onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                                onChange={(e) => {
+                                    setSelectedMonth(Number(e.target.value));
+                                    setCurrentPage(1);
+                                }}
                             >
                                 {MONTHS.map((month, index) => (
                                     <option
@@ -169,7 +180,10 @@ export default function StockTransactionPage() {
                                 type="select"
                                 className="sp-filter"
                                 value={selectedYear}
-                                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                                onChange={(e) => {
+                                    setSelectedYear(Number(e.target.value));
+                                    setCurrentPage(1);
+                                }}
                             >
                                 {YEARS.map((year) => (
                                     <option key={year} value={year}>
@@ -273,6 +287,51 @@ export default function StockTransactionPage() {
                                 </tbody>
                             </Table>
                         </div>
+                        {pagination && pagination.last_page > 1 && (
+                            <div className="d-flex justify-content-center mt-4">
+                                <Pagination>
+
+                                    <PaginationItem disabled={currentPage === 1}>
+                                        <PaginationLink
+                                            previous
+                                            onClick={() => setCurrentPage(currentPage - 1)}
+                                        />
+                                    </PaginationItem>
+
+                                    {Array.from(
+                                        { length: pagination.last_page },
+                                        (_, i) => (
+                                            <PaginationItem
+                                                key={i + 1}
+                                                active={currentPage === i + 1}
+                                            >
+                                                <PaginationLink
+                                                    onClick={() =>
+                                                        setCurrentPage(i + 1)
+                                                    }
+                                                >
+                                                    {i + 1}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        )
+                                    )}
+
+                                    <PaginationItem
+                                        disabled={
+                                            currentPage === pagination.last_page
+                                        }
+                                    >
+                                        <PaginationLink
+                                            next
+                                            onClick={() =>
+                                                setCurrentPage(currentPage + 1)
+                                            }
+                                        />
+                                    </PaginationItem>
+
+                                </Pagination>
+                            </div>
+                        )}
                     </CardBody>
                 </Card>
             </Container>

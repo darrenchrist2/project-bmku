@@ -5,8 +5,7 @@ namespace App\Services;
 use App\Models\InventoryItem;
 use App\Models\InventoryTransaction;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class InventoryTransactionService
 {
@@ -134,8 +133,9 @@ class InventoryTransactionService
      */
     public function getMonthlyStockReport(
         int $year,
-        int $month
-    ): Collection {
+        int $month,
+        int $perPage = 5
+    ): LengthAwarePaginator {
 
         return InventoryItem::select(
                 'inventory_items.id',
@@ -181,7 +181,8 @@ class InventoryTransactionService
                 'inventory_items.item_code',
                 'inventory_items.category'
             )
-            ->get();
+            ->orderBy('inventory_items.item_name')
+            ->paginate($perPage);
     }
 
     /**

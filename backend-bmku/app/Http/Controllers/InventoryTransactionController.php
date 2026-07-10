@@ -10,7 +10,8 @@ class InventoryTransactionController extends Controller
 {
     public function __construct(
         protected InventoryTransactionService $inventoryTransactionService
-    ) {}
+    ) {
+    }
 
     /**
      * Display all transactions.
@@ -121,15 +122,24 @@ class InventoryTransactionController extends Controller
         $validated = $request->validate([
             'year' => 'required|integer|min:2000',
             'month' => 'required|integer|between:1,12',
+            'page' => 'nullable|integer|min:1',
         ]);
+
+        $report = $this->inventoryTransactionService->getMonthlyStockReport(
+            $validated['year'],
+            $validated['month']
+        );
 
         return response()->json([
             'success' => true,
             'message' => 'Monthly stock report retrieved successfully.',
-            'data' => $this->inventoryTransactionService->getMonthlyStockReport(
-                $validated['year'],
-                $validated['month']
-            ),
+            'data' => $report->items(),
+            'pagination' => [
+                'current_page' => $report->currentPage(),
+                'last_page' => $report->lastPage(),
+                'per_page' => $report->perPage(),
+                'total' => $report->total(),
+            ]
         ]);
     }
 
