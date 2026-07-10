@@ -11,17 +11,19 @@ import {
     InputGroupText,
     Badge,
     UncontrolledTooltip,
+    Spinner,
 } from 'reactstrap';
 import {
     Search,
     Plus,
     Pencil,
+    Trash2,
     ArrowDownCircle,
     ArrowUpCircle,
     PackageSearch,
 } from 'lucide-react';
 import './style.css';
-import { getCurrentStocks, createInventoryItem, updateInventoryItem } from './funcAPICall';
+import { getCurrentStocks, createInventoryItem, updateInventoryItem, deleteInventoryItem } from './funcAPICall';
 import { toast } from 'react-toastify';
 import GeneralModal from '../../components/generalModal';
 
@@ -42,6 +44,8 @@ export default function StockPage() {
     const [jenisFilter, setJenisFilter] = useState('Semua');
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deletingId, setDeletingId] = useState(null);
 
     const [stockData, setStockData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -271,6 +275,29 @@ export default function StockPage() {
         setIsModalOpen(true);
     };
 
+    const handleDelete = async (id) => {
+        if (!window.confirm("Yakin ingin menghapus barang ini?")) {
+            return;
+        }
+
+        setIsDeleting(true);
+        setDeletingId(id);
+
+        try {
+            const result = await deleteInventoryItem(id);
+
+            if (result.success) {
+                await loadInventoryItems();
+                toast.success(result.message);
+            } else {
+                toast.error(result.message);
+            }
+        } finally {
+            setIsDeleting(false);
+            setDeletingId(null);
+        }
+    };
+
     return (
         <div className="sp-page">
             <Container fluid className="sp-container">
@@ -282,10 +309,10 @@ export default function StockPage() {
                         </p>
                     </div>
                     <div className="sp-actions">
-                        <Button color="primary" className="sp-btn-add sp-btn-list" onClick={() => navigate('/spare-part-toner')}>
+                        <Button disabled={isDeleting} color="primary" className="sp-btn-add sp-btn-list" onClick={() => navigate('/spare-part-toner')}>
                             <span>Kembali</span>
                         </Button>
-                        <Button color="primary" className="sp-btn-add" onClick={openAddModal}>
+                        <Button disabled={isDeleting} color="primary" className="sp-btn-add" onClick={openAddModal}>
                             <Plus size={18} strokeWidth={2.25} />
                             <span>Tambah Barang</span>
                         </Button>
@@ -359,6 +386,7 @@ export default function StockPage() {
                                                 <td className="sp-col-center">
                                                     <Button
                                                         id={`edit-btn-${item.id}`}
+                                                        disabled={isDeleting}
                                                         color="light"
                                                         size="sm"
                                                         className="sp-btn-edit"
@@ -370,6 +398,33 @@ export default function StockPage() {
                                                     <UncontrolledTooltip target={`edit-btn-${item.id}`} placement="top">
                                                         Edit
                                                     </UncontrolledTooltip>
+                                                    
+                                                    {item.current_stock <= 0 && (
+                                                        <>
+                                                            <Button
+                                                                id={`delete-btn-${item.id}`}
+                                                                color="light"
+                                                                size="sm"
+                                                                className="sp-btn-delete"
+                                                                onClick={() => handleDelete(item.id)}
+                                                                aria-label={`Hapus ${item.item_name}`}
+                                                                disabled={isDeleting}
+                                                            >
+                                                                {isDeleting && deletingId === item.id ? (
+                                                                    <Spinner size="sm" />
+                                                                ) : (
+                                                                    <Trash2 size={15} strokeWidth={2} />
+                                                                )}
+                                                            </Button>
+
+                                                            <UncontrolledTooltip
+                                                                target={`delete-btn-${item.id}`}
+                                                                placement="top"
+                                                            >
+                                                                Hapus
+                                                            </UncontrolledTooltip>
+                                                        </>
+                                                    )}
                                                 </td>
                                             </tr>
                                         );

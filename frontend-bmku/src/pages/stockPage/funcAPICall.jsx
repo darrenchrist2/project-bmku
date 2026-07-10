@@ -89,3 +89,25 @@ export async function updateInventoryItem(id, data) {
         };
     }
 }
+
+export async function deleteInventoryItem(id) {
+    try {
+        const response = await api.delete(`/inventory-items/${id}`);
+
+        return {
+            success: true,
+            data: response.data.data ?? null,
+            message: response.data.message,
+        };
+    } catch (error) {
+        console.error("Failed to delete inventory item:", error);
+
+        return {
+            success: false,
+            data: null,
+            message:
+                error.response?.data?.message ||
+                "Failed to delete inventory item.",
+        };
+    }
+}

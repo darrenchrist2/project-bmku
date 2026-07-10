@@ -20,6 +20,7 @@
   --sp-sparepart-text: #b6790a;
   --sp-success: #1fa871;
   --sp-danger: #e0574f;
+  --sp-danger-bg: #fff1f0;
   --sp-font-display: 'Manrope', 'Segoe UI', sans-serif;
   --sp-font-body: 'Work Sans', 'Segoe UI', sans-serif;
 }
@@ -282,6 +283,26 @@
   color: var(--sp-primary) !important;
   border-color: var(--sp-primary) !important;
   background: var(--sp-toner-bg) !important;
+}
+
+.sp-btn-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid var(--sp-border) !important;
+  background: #fff !important;
+  color: var(--sp-text-dim) !important;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.sp-btn-delete:hover {
+  color: var(--sp-danger) !important;
+  border-color: var(--sp-danger) !important;
+  background: var(--sp-danger-bg) !important;
 }
 
 /* Empty state */
