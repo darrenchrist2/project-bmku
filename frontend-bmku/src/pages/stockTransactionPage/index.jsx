@@ -22,17 +22,6 @@ import {
 } from 'lucide-react';
 import './style.css';
 
-/**
- * StockPage - Halaman "Stok Spare Part & Toner".
- *
- * Tema: Modern White - kartu putih dengan shadow lembut, aksen warna
- * indigo untuk aksi utama, badge berwarna untuk membedakan jenis barang.
- * Sengaja dibuat berbeda arah visual dari Sidebar (industrial) karena
- * area konten halaman & shell navigasi memang punya peran berbeda.
- *
- * Data di bawah ini seluruhnya dummy - hanya untuk kebutuhan tampilan.
- */
-
 const JENIS_CONFIG = {
     Toner: { color: 'primary', className: 'sp-badge--toner' },
     'Spare Part': { color: 'warning', className: 'sp-badge--sparepart' },
