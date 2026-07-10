@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Container,
@@ -21,46 +21,68 @@ import {
     PackageSearch,
 } from 'lucide-react';
 import './style.css';
+import { getMonthlyReport } from './funcAPICall';
 
 const JENIS_CONFIG = {
-    Toner: { color: 'primary', className: 'sp-badge--toner' },
-    'Spare Part': { color: 'warning', className: 'sp-badge--sparepart' },
+    TONER: {
+        color: "primary",
+        className: "sp-badge--toner",
+    },
+    SPAREPART: {
+        color: "warning",
+        className: "sp-badge--sparepart",
+    },
 };
 
-const DUMMY_STOCK = [
-    { id: 1, tanggal: '2026-07-08', tipeMutasi: 'masuk', nama: 'Toner HP LaserJet 26A', jenis: 'Toner', jumlah: 24 },
-    { id: 2, tanggal: '2026-07-07', tipeMutasi: 'keluar', nama: 'Drum Unit Canon LBP2900', jenis: 'Spare Part', jumlah: 3 },
-    { id: 3, tanggal: '2026-07-06', tipeMutasi: 'masuk', nama: 'Toner Brother TN-2130', jenis: 'Toner', jumlah: 15 },
-    { id: 4, tanggal: '2026-07-05', tipeMutasi: 'keluar', nama: 'Roller Feed Epson L3110', jenis: 'Spare Part', jumlah: 6 },
-    { id: 5, tanggal: '2026-07-04', tipeMutasi: 'masuk', nama: 'Toner Samsung MLT-D111S', jenis: 'Toner', jumlah: 18 },
-    { id: 6, tanggal: '2026-07-03', tipeMutasi: 'masuk', nama: 'Cartridge Head Canon G2010', jenis: 'Spare Part', jumlah: 10 },
-    { id: 7, tanggal: '2026-07-02', tipeMutasi: 'keluar', nama: 'Toner HP LaserJet 12A', jenis: 'Toner', jumlah: 5 },
-    { id: 8, tanggal: '2026-07-01', tipeMutasi: 'keluar', nama: 'Fuser Unit Brother HL-2270', jenis: 'Spare Part', jumlah: 2 },
-];
-
-function formatTanggal(isoDate) {
-    const date = new Date(`${isoDate}T00:00:00`);
-    return date.toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
-}
+// function formatTanggal(isoDate) {
+//     const date = new Date(`${isoDate}T00:00:00`);
+//     return date.toLocaleDateString('id-ID', {
+//         day: '2-digit',
+//         month: 'short',
+//         year: 'numeric',
+//     });
+// }
 
 export default function StockTransactionPage() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [jenisFilter, setJenisFilter] = useState('Semua');
 
+    const [reportData, setReportData] = useState([]);
+
+    useEffect(() => {
+        async function loadData() {
+            const today = new Date();
+
+            const result = await getMonthlyReport(
+                today.getFullYear(),
+                today.getMonth() + 1
+            );
+
+            if (result.success) {
+                setReportData(result.data);
+            } else {
+                setReportData([]);
+                console.error(result.message);
+            }
+        }
+
+        loadData();
+    }, []);
+
     const filteredData = useMemo(() => {
-        return DUMMY_STOCK.filter((item) => {
-            const matchSearch = item.nama
+        return reportData.filter((item) => {
+            const matchSearch = item.item_name
                 .toLowerCase()
                 .includes(searchTerm.trim().toLowerCase());
-            const matchJenis = jenisFilter === 'Semua' || item.jenis === jenisFilter;
+
+            const matchJenis =
+                jenisFilter === 'Semua' ||
+                item.category === jenisFilter;
+
             return matchSearch && matchJenis;
         });
-    }, [searchTerm, jenisFilter]);
+    }, [reportData, searchTerm, jenisFilter]);
 
     const handleEdit = (item) => {
         // Integrasikan dengan modal/route edit di implementasi sebenarnya.
@@ -123,10 +145,25 @@ export default function StockTransactionPage() {
                             <Table responsive borderless className="sp-table">
                                 <thead>
                                     <tr>
-                                        <th>Tanggal</th>
                                         <th>Nama Barang</th>
                                         <th>Jenis Barang</th>
-                                        <th className="sp-col-center">Jumlah</th>
+
+                                        <th className="sp-col-center">
+                                            <ArrowDownCircle
+                                                size={16}
+                                                className="sp-icon-masuk me-1"
+                                            />
+                                            Jumlah Masuk
+                                        </th>
+
+                                        <th className="sp-col-center">
+                                            <ArrowUpCircle
+                                                size={16}
+                                                className="sp-icon-keluar me-1"
+                                            />
+                                            Jumlah Keluar
+                                        </th>
+
                                         <th className="sp-col-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -142,30 +179,30 @@ export default function StockTransactionPage() {
 
                                     {filteredData.map((item) => {
                                         const isMasuk = item.tipeMutasi === 'masuk';
-                                        const jenisCfg = JENIS_CONFIG[item.jenis];
                                         return (
                                             <tr key={item.id}>
-                                                <td>
-                                                    <div className="sp-tanggal">
-                                                        {isMasuk ? (
-                                                            <ArrowDownCircle size={16} className="sp-icon-masuk" aria-hidden="true" />
-                                                        ) : (
-                                                            <ArrowUpCircle size={16} className="sp-icon-keluar" aria-hidden="true" />
-                                                        )}
-                                                        <span>{formatTanggal(item.tanggal)}</span>
-                                                    </div>
+                                                <td className="sp-nama">
+                                                    {item.item_name}
                                                 </td>
-                                                <td className="sp-nama">{item.nama}</td>
+
                                                 <td>
                                                     <Badge
                                                         pill
-                                                        color={jenisCfg.color}
-                                                        className={`sp-badge ${jenisCfg.className}`}
+                                                        color={JENIS_CONFIG[item.category]?.color}
+                                                        className={`sp-badge ${JENIS_CONFIG[item.category]?.className || ""}`}
                                                     >
-                                                        {item.jenis}
+                                                        {item.category}
                                                     </Badge>
                                                 </td>
-                                                <td className="sp-col-center sp-jumlah">{item.jumlah}</td>
+
+                                                <td className="sp-col-center sp-jumlah">
+                                                    {item.total_in}
+                                                </td>
+
+                                                <td className="sp-col-center sp-jumlah">
+                                                    {item.total_out}
+                                                </td>
+
                                                 <td className="sp-col-center">
                                                     <Button
                                                         id={`edit-btn-${item.id}`}
