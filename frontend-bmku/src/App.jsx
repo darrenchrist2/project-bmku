@@ -1,6 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from './components/sidebar';
 import StockTransactionPage from './pages/stockTransactionPage';
 import StockPage from './pages/stockPage';
@@ -47,6 +49,7 @@ export default function App() {
             )}
           />
         </Routes>
+        <ToastContainer position="top-right" autoClose={3000} />
       </main>
     </div>
   );

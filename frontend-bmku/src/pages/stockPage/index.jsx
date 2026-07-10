@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import './style.css';
 import { getCurrentStocks, createInventoryItem, updateInventoryItem } from './funcAPICall';
+import { toast } from 'react-toastify';
 import GeneralModal from '../../components/generalModal';
 
 const JENIS_CONFIG = {
@@ -165,6 +166,7 @@ export default function StockPage() {
 
             if (result.success) {
                 await loadInventoryItems();
+                toast.success(result.message);
 
                 setFormValues({
                     item_name: "",
@@ -180,7 +182,8 @@ export default function StockPage() {
                     setFormErrors(result.errors);
                 }
 
-                alert(result.message);
+                // alert(result.message);
+                toast.error(result.message);
             }
         } finally {
             setIsSubmitting(false);
@@ -203,6 +206,7 @@ export default function StockPage() {
 
             if (result.success) {
                 await loadInventoryItems();
+                toast.success(result.message);
                 setFormValues({
                     item_name: "",
                     category: "",
@@ -215,7 +219,8 @@ export default function StockPage() {
                     setFormErrors(result.errors);
                 }
 
-                alert(result.message);
+                // alert(result.message);
+                toast.error(result.message);
             }
         } finally {
             setIsSubmitting(false);
@@ -235,7 +240,8 @@ export default function StockPage() {
             if (result.success) {
                 setStockData(result.data);
             } else {
-                alert(result.message);
+                // alert(result.message);
+                toast.error(result.message);
             }
         } finally {
             setLoading(false);
