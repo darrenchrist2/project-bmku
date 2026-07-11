@@ -12,10 +12,10 @@ import {
     Spinner,
 } from 'reactstrap';
 import { X } from 'lucide-react';
-import './GeneralModal.css';
+import './addEditModal.css';
 
 /**
- * GeneralModal
+ * AddEditModal
  * -----------------------------------------------------------------------
  * Generic, form-driven modal built on reactstrap. Pass a `fields` array
  * and the component renders the right input for each entry — the number
@@ -38,7 +38,7 @@ import './GeneralModal.css';
  *   options: [{ value, label }] // select only
  * }
  */
-const GeneralModal = ({
+const AddEditModal = ({
     isOpen,
     toggle,
     title,
@@ -236,4 +236,4 @@ const GeneralModal = ({
     );
 };
 
-export default GeneralModal;
+export default AddEditModal;

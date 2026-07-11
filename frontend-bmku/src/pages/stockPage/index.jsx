@@ -28,7 +28,7 @@ import {
 import './style.css';
 import { getCurrentStocks, createInventoryItem, updateInventoryItem, deleteInventoryItem } from './funcAPICall';
 import { toast } from 'react-toastify';
-import GeneralModal from '../../components/generalModal';
+import AddEditModal from '../../components/addEditModal';
 
 const JENIS_CONFIG = {
     TONER: {
@@ -489,7 +489,7 @@ export default function StockPage() {
                 </Card>
             </Container>
 
-            <GeneralModal
+            <AddEditModal
                 isOpen={isModalOpen}
                 toggle={closeModal}
                 title={
