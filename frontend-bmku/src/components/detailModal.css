@@ -67,9 +67,9 @@
     animation-delay: var(--rm-delay, 0ms);
 }
 
-.dm-field:last-child,
-.dm-field:nth-last-child(2) {
+.dm-field:last-child {
     border-bottom: none;
+    padding-bottom: 0;
 }
 
 .dm-dt {
