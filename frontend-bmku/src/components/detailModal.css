@@ -76,6 +76,10 @@
     margin-bottom: 6px;
 }
 
+.dm-dt .dm-badge {
+    margin-bottom: 2px;
+}
+
 .dm-dd {
     margin: 0;
 }

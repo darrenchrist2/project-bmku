@@ -219,10 +219,16 @@ class InventoryTransactionService
         return InventoryTransaction::select(
             'inventory_transactions.transaction_type',
             'inventory_transactions.transaction_date',
-            'inventory_transactions.quantity',
-            'branch_offices.name as branch_name'
+            'inventory_transactions.quantity'
         )
-            ->join(
+            ->selectRaw("
+                CASE
+                    WHEN inventory_transactions.transaction_type = 'OUT'
+                    THEN branch_offices.name
+                    ELSE ''
+                END AS branch_name
+            ")
+            ->leftJoin(
                 'branch_offices',
                 'inventory_transactions.branch_office_id',
                 '=',
@@ -231,8 +237,8 @@ class InventoryTransactionService
             ->where('inventory_transactions.item_id', $itemId)
             ->whereYear('inventory_transactions.transaction_date', $year)
             ->whereMonth('inventory_transactions.transaction_date', $month)
-            ->where('inventory_transactions.transaction_type', 'OUT')
             ->orderBy('inventory_transactions.transaction_date')
+            ->orderBy('inventory_transactions.id')
             ->get();
     }
 

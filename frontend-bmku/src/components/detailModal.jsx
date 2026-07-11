@@ -36,6 +36,8 @@ import './detailModal.css';
  *   value: any,
  *   type: 'text' | 'number' | 'date' | 'badge' | 'boolean' | 'link' | 'image' | 'longtext',
  *   full: boolean,        // span both columns on wide screens
+ *   labelBadge: boolean,  // render the LABEL itself as a pill instead of plain text
+ *   labelVariant: 'success' | 'warning' | 'danger' | 'info' | 'neutral', // color for labelBadge
  *   mono: boolean,        // render value in IBM Plex Mono-esque monospace styling (codes/IDs)
  *   copyable: boolean,    // show a copy-to-clipboard affordance
  *   unit: string,         // suffix for 'number' (e.g. 'pcs', 'unit')
@@ -199,7 +201,16 @@ const DetailModal = ({
                             className={`dm-field ${field.full ? 'rm-field-full' : ''}`}
                             style={{ '--rm-delay': `${index * 35}ms` }}
                         >
-                            <dt className="rm-label dm-dt">{field.label}</dt>
+                            <dt className={`dm-dt ${field.labelBadge ? '' : 'rm-label'}`}>
+                                {field.labelBadge ? (
+                                    <span className={`dm-badge dm-badge-${field.labelVariant || 'neutral'}`}>
+                                        <span className="dm-badge-dot" />
+                                        {field.label}
+                                    </span>
+                                ) : (
+                                    field.label
+                                )}
+                            </dt>
                             <dd className="dm-dd">
                                 <FieldValue field={field} />
                             </dd>

@@ -116,16 +116,24 @@ export default function StockTransactionPage() {
             return;
         }
 
-        const modalData = result.data.map((row, index) => ({
-            label: `Pemakaian ${index + 1}`,
-            type: "longtext",
-            full: true,
-            value:
-                `Cabang          : ${row.branch_name}\n` +
-                `Jenis Transaksi : ${row.transaction_type}\n` +
-                `Tanggal         : ${new Date(row.transaction_date).toLocaleDateString("id-ID")}\n` +
-                `Jumlah          : ${row.quantity}`,
-        }));
+        const modalData = result.data.map((row, index) => {
+            const isStockIn = row.transaction_type === "IN";
+
+            return {
+                label: `${isStockIn ? "Barang Masuk" : "Barang Keluar"}`,
+                type: "longtext",
+                full: true,
+                labelBadge: true,
+                labelVariant: isStockIn ? "success" : "danger",
+                value: isStockIn ?
+                    `Tanggal         : ${new Date(row.transaction_date).toLocaleDateString("id-ID")}\n` +
+                    `Jumlah          : ${row.quantity}`
+                    :
+                    `Tanggal         : ${new Date(row.transaction_date).toLocaleDateString("id-ID")}\n` +
+                    `Cabang          : ${row.branch_name}\n` +
+                    `Jumlah          : ${row.quantity}`,
+            };
+        });
 
         setDetailTitle(item.item_name);
         setDetailData(modalData);
