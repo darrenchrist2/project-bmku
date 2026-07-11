@@ -1,0 +1,249 @@
+/* DetailModal — "Modern White" theme, read-only variant
+   -----------------------------------------------------------------------
+   This file intentionally does NOT re-import Manrope/Work Sans or
+   redeclare the --rm-* tokens — those already come from addEditModal.css,
+   which is expected to be loaded on the same page (both modals share the
+   rm-modal-wrapper / rm-backdrop / rm-content / rm-header / rm-footer /
+   rm-btn / rm-label / rm-field-full classes). Importing the fonts twice
+   was flagged earlier as something to avoid, so this file only adds the
+   dm- classes that are specific to the read-only layout.
+
+   If you ever use DetailModal on a page that does NOT include
+   addEditModal.css, uncomment the block below. */
+
+/*
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Work+Sans:wght@400;500;600&display=swap');
+
+:root {
+    --rm-ink: #16181d;
+    --rm-ink-soft: #6b7280;
+    --rm-line: #e8e9ed;
+    --rm-surface: #ffffff;
+    --rm-surface-tint: #fafafb;
+    --rm-accent: #4f46e5;
+    --rm-accent-soft: #eef0fd;
+    --rm-danger: #dc2626;
+    --rm-radius-lg: 20px;
+    --rm-radius-md: 12px;
+    --rm-shadow: 0 30px 60px -20px rgba(22, 24, 29, 0.28), 0 8px 24px -8px rgba(22, 24, 29, 0.12);
+}
+*/
+
+/* ---------- Header tweaks ---------- */
+.dm-eyebrow {
+    margin: 0 0 4px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--rm-accent);
+}
+
+/* ---------- Body / definition list ---------- */
+.dm-body {
+    max-height: 72vh;
+}
+
+.dm-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin: 0;
+}
+
+@media (min-width: 576px) {
+    .dm-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px 18px;
+    }
+}
+
+.dm-field {
+    margin: 0;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--rm-line);
+    animation: rm-rise 0.3s ease both;
+    animation-delay: var(--rm-delay, 0ms);
+}
+
+.dm-field:last-child,
+.dm-field:nth-last-child(2) {
+    border-bottom: none;
+}
+
+.dm-dt {
+    margin-bottom: 6px;
+}
+
+.dm-dd {
+    margin: 0;
+}
+
+/* ---------- Value renderers ---------- */
+.dm-value {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 0.96rem;
+    font-weight: 500;
+    color: var(--rm-ink);
+    line-height: 1.4;
+}
+
+.dm-value-empty {
+    color: var(--rm-ink-soft);
+    font-style: italic;
+    font-weight: 400;
+}
+
+.dm-value-mono {
+    font-family: 'IBM Plex Mono', 'Work Sans', monospace;
+    font-size: 0.85rem;
+    background: var(--rm-surface-tint);
+    border: 1px solid var(--rm-line);
+    border-radius: 6px;
+    padding: 3px 8px;
+    display: inline-block;
+}
+
+.dm-value-number {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--rm-ink);
+}
+
+.dm-unit {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.78rem;
+    color: var(--rm-ink-soft);
+    margin-left: 4px;
+}
+
+.dm-value-long {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+/* ---------- Badge / status pill ---------- */
+.dm-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    padding: 4px 11px 4px 9px;
+    border-radius: 999px;
+    letter-spacing: 0.01em;
+}
+
+.dm-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+.dm-badge-success {
+    background: #e9f9ee;
+    color: #1a9850;
+}
+
+.dm-badge-warning {
+    background: #fff6e5;
+    color: #b7791f;
+}
+
+.dm-badge-danger {
+    background: #fdecec;
+    color: var(--rm-danger);
+}
+
+.dm-badge-info {
+    background: var(--rm-accent-soft);
+    color: var(--rm-accent);
+}
+
+.dm-badge-neutral {
+    background: var(--rm-surface-tint);
+    color: var(--rm-ink-soft);
+    border: 1px solid var(--rm-line);
+}
+
+/* ---------- Link ---------- */
+.dm-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--rm-accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s ease;
+}
+
+.dm-link:hover {
+    border-bottom-color: var(--rm-accent);
+    color: var(--rm-accent);
+}
+
+/* ---------- Copyable value ---------- */
+.dm-copy-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+}
+
+.dm-copy-icon {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    color: var(--rm-ink-soft);
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dm-copy-trigger:hover .dm-copy-icon {
+    background: var(--rm-accent-soft);
+    color: var(--rm-accent);
+}
+
+.dm-copy-icon.is-copied {
+    color: #1a9850;
+}
+
+/* ---------- Image preview ---------- */
+.dm-image-frame {
+    width: 100%;
+    max-width: 220px;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--rm-radius-md);
+    overflow: hidden;
+    border: 1px solid var(--rm-line);
+    background: var(--rm-surface-tint);
+}
+
+.dm-image-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.dm-image-fallback {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: var(--rm-ink-soft);
+}

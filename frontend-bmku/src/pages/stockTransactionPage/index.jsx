@@ -25,7 +25,8 @@ import {
     Eye,
 } from 'lucide-react';
 import './style.css';
-import { getMonthlyReport } from './funcAPICall';
+import { getMonthlyReport, getItemBranchUsage, } from './funcAPICall';
+import DetailModal from '../../components/detailModal';
 
 const JENIS_CONFIG = {
     TONER: {
@@ -56,6 +57,10 @@ export default function StockTransactionPage() {
     const [selectedYear, setSelectedYear] = useState(today.getFullYear());
 
     const [reportData, setReportData] = useState([]);
+
+    const [detailOpen, setDetailOpen] = useState(false);
+    const [detailTitle, setDetailTitle] = useState("");
+    const [detailData, setDetailData] = useState([]);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [pagination, setPagination] = useState(null);
@@ -100,13 +105,31 @@ export default function StockTransactionPage() {
         console.log('Edit stok:', item);
     };
 
-    const handleDetail = (item) => {
-        console.log("Detail stok:", item);
+    const handleDetail = async (item) => {
+        const result = await getItemBranchUsage(
+            item.id,
+            selectedYear,
+            selectedMonth
+        );
 
-        // Contoh jika ingin pindah halaman
-        // navigate(`/stock-transaction/${item.id}`);
+        if (!result.success) {
+            return;
+        }
 
-        // atau buka modal detail
+        const modalData = result.data.map((row, index) => ({
+            label: `Pemakaian ${index + 1}`,
+            type: "longtext",
+            full: true,
+            value:
+                `Cabang          : ${row.branch_name}\n` +
+                `Jenis Transaksi : ${row.transaction_type}\n` +
+                `Tanggal         : ${new Date(row.transaction_date).toLocaleDateString("id-ID")}\n` +
+                `Jumlah          : ${row.quantity}`,
+        }));
+
+        setDetailTitle(item.item_name);
+        setDetailData(modalData);
+        setDetailOpen(true);
     };
 
     const MONTHS = [
@@ -363,6 +386,15 @@ export default function StockTransactionPage() {
                         )}
                     </CardBody>
                 </Card>
+
+                <DetailModal
+                    isOpen={detailOpen}
+                    toggle={() => setDetailOpen(false)}
+                    eyebrow="Detail Pemakaian Cabang"
+                    title={detailTitle}
+                    subtitle={`${MONTHS[selectedMonth - 1]} ${selectedYear}`}
+                    data={detailData}
+                />
             </Container>
         </div>
     );
