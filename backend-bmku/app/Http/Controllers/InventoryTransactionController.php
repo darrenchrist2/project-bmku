@@ -177,6 +177,30 @@ class InventoryTransactionController extends Controller
     }
 
     /**
+     * Detail penggunaan cabang berdasarkan item.
+     */
+    public function itemBranchUsage(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'item_id' => 'required|exists:inventory_items,id',
+            'year' => 'required|integer|min:2000',
+            'month' => 'required|integer|between:1,12',
+        ]);
+
+        $data = $this->inventoryTransactionService->getItemBranchUsage(
+            $validated['item_id'],
+            $validated['year'],
+            $validated['month']
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Item branch usage retrieved successfully.',
+            'data' => $data,
+        ]);
+    }
+
+    /**
      * Delete transaction.
      */
     public function destroy(int $id): JsonResponse

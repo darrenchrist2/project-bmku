@@ -18,8 +18,8 @@ class InventoryTransactionService
             'inventoryItem',
             'branchOffice'
         ])
-        ->latest('transaction_date')
-        ->get();
+            ->latest('transaction_date')
+            ->get();
     }
 
     /**
@@ -90,15 +90,14 @@ class InventoryTransactionService
      */
     public function getCurrentStocks(
         int $perPage = 5
-    ): LengthAwarePaginator
-    {
+    ): LengthAwarePaginator {
         return InventoryItem::select(
-                'inventory_items.id',
-                'inventory_items.item_code',
-                'inventory_items.item_name',
-                'inventory_items.category',
-                'inventory_items.unit'
-            )
+            'inventory_items.id',
+            'inventory_items.item_code',
+            'inventory_items.item_name',
+            'inventory_items.category',
+            'inventory_items.unit'
+        )
             ->selectRaw("
                 COALESCE(
                     SUM(
@@ -140,11 +139,11 @@ class InventoryTransactionService
     ): LengthAwarePaginator {
 
         return InventoryItem::select(
-                'inventory_items.id',
-                'inventory_items.item_name',
-                'inventory_items.item_code',
-                'inventory_items.category'
-            )
+            'inventory_items.id',
+            'inventory_items.item_name',
+            'inventory_items.item_code',
+            'inventory_items.category'
+        )
             ->selectRaw("
                 SUM(
                     CASE
@@ -207,6 +206,34 @@ class InventoryTransactionService
             'total_quantity' => $transactions->sum('quantity'),
             'data' => $transactions,
         ];
+    }
+
+    /**
+     * Detail pemakaian cabang berdasarkan item.
+     */
+    public function getItemBranchUsage(
+        int $itemId,
+        int $year,
+        int $month
+    ): Collection {
+        return InventoryTransaction::select(
+            'inventory_transactions.transaction_type',
+            'inventory_transactions.transaction_date',
+            'inventory_transactions.quantity',
+            'branch_offices.name as branch_name'
+        )
+            ->join(
+                'branch_offices',
+                'inventory_transactions.branch_office_id',
+                '=',
+                'branch_offices.id'
+            )
+            ->where('inventory_transactions.item_id', $itemId)
+            ->whereYear('inventory_transactions.transaction_date', $year)
+            ->whereMonth('inventory_transactions.transaction_date', $month)
+            ->where('inventory_transactions.transaction_type', 'OUT')
+            ->orderBy('inventory_transactions.transaction_date')
+            ->get();
     }
 
     /**

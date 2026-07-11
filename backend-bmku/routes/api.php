@@ -14,6 +14,8 @@ Route::prefix('inventory-transactions')->group(function () {
 
     Route::get('/', [InventoryTransactionController::class, 'index']);
 
+    Route::get('/item-branch-usage', [InventoryTransactionController::class, 'itemBranchUsage']);
+
     Route::post('/stock-in', [InventoryTransactionController::class, 'stockIn']);
     Route::post('/stock-out', [InventoryTransactionController::class, 'stockOut']);
 
