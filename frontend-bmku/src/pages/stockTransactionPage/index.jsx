@@ -27,6 +27,7 @@ import {
 import './style.css';
 import { getMonthlyReport, getItemBranchUsage, } from './funcAPICall';
 import DetailModal from '../../components/detailModal';
+import AddEditModal from '../../components/addEditModal';
 
 const JENIS_CONFIG = {
     TONER: {
@@ -65,6 +66,17 @@ export default function StockTransactionPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [pagination, setPagination] = useState(null);
 
+    const [editOpen, setEditOpen] = useState(false);
+    const [transactionMode, setTransactionMode] = useState("IN"); // IN | OUT
+    const [selectedItem, setSelectedItem] = useState(null);
+
+    const [formData, setFormData] = useState({
+        quantity_in: "",
+        quantity_out: "",
+    });
+
+    const [errors, setErrors] = useState({});
+
     useEffect(() => {
         async function loadData() {
             const result = await getMonthlyReport(
@@ -100,9 +112,101 @@ export default function StockTransactionPage() {
     }, [reportData, searchTerm, jenisFilter]);
 
     const handleEdit = (item) => {
-        // Integrasikan dengan modal/route edit di implementasi sebenarnya.
-        // eslint-disable-next-line no-console
-        console.log('Edit stok:', item);
+        setSelectedItem(item);
+
+        // default ketika modal dibuka
+        setTransactionMode("IN");
+
+        setFormData({
+            quantity_in: "",
+            quantity_out: "",
+        });
+
+        setErrors({});
+        setEditOpen(true);
+    };
+
+    const handleChange = (name, value) => {
+        if (name === "transaction_mode") {
+            setTransactionMode(value);
+
+            setFormData({
+                quantity_in: "",
+                quantity_out: "",
+            });
+
+            return;
+        }
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const modalFields = [
+        {
+            name: "transaction_mode",
+            label: "Mode Transaksi",
+            type: "select",
+            required: true,
+            options: [
+                {
+                    value: "IN",
+                    label: "Stock In",
+                },
+                {
+                    value: "OUT",
+                    label: "Stock Out",
+                },
+            ],
+        },
+
+        ...(transactionMode === "IN"
+            ? [
+                {
+                    name: "quantity_in",
+                    label: "Jumlah Stok Masuk",
+                    type: "number",
+                    required: true,
+                    placeholder: "Masukkan jumlah stok masuk",
+                },
+            ]
+            : [
+                {
+                    name: "quantity_out",
+                    label: "Jumlah Stok Keluar",
+                    type: "number",
+                    required: true,
+                    placeholder: "Masukkan jumlah stok keluar",
+                },
+            ]),
+    ];
+
+    const handleSubmit = () => {
+        const newErrors = {};
+
+        if (transactionMode === "IN") {
+            if (!formData.quantity_in) {
+                newErrors.quantity_in = "Jumlah stok masuk wajib diisi";
+            }
+        }
+
+        if (transactionMode === "OUT") {
+            if (!formData.quantity_out) {
+                newErrors.quantity_out = "Jumlah stok keluar wajib diisi";
+            }
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
+        // panggil API
+        console.log(transactionMode, formData);
+
+        setEditOpen(false);
     };
 
     const handleDetail = async (item) => {
@@ -171,14 +275,14 @@ export default function StockTransactionPage() {
                         </p>
                     </div>
                     <div className="sp-actions">
-                        <Button color="primary" className="sp-btn-add sp-btn-list" onClick={() => navigate('/stock-page')}>
+                        <Button color="primary" className="sp-btn-add" onClick={() => navigate('/stock-page')}>
                             <span>Stok Terkini</span>
                         </Button>
 
-                        <Button color="primary" className="sp-btn-add">
+                        {/* <Button color="primary" className="sp-btn-add">
                             <Plus size={18} strokeWidth={2.25} />
                             <span>Tambah Mutasi</span>
-                        </Button>
+                        </Button> */}
                     </div>
                 </div>
 
@@ -402,6 +506,22 @@ export default function StockTransactionPage() {
                     title={detailTitle}
                     subtitle={`${MONTHS[selectedMonth - 1]} ${selectedYear}`}
                     data={detailData}
+                />
+
+                <AddEditModal
+                    isOpen={editOpen}
+                    toggle={() => setEditOpen(false)}
+                    title={selectedItem?.item_name || ""}
+                    subtitle="Tambah Mutasi Stok"
+                    fields={modalFields}
+                    values={{
+                        transaction_mode: transactionMode,
+                        ...formData,
+                    }}
+                    errors={errors}
+                    onChange={handleChange}
+                    onSubmit={handleSubmit}
+                    submitLabel="Simpan"
                 />
             </Container>
         </div>
