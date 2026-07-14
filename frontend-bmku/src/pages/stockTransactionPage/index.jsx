@@ -254,7 +254,6 @@ export default function StockTransactionPage() {
                     quantity: Number(formData.quantity_in),
                     note: formData.note || "",
                 });
-                toast.success(result.message);
             } else {
                 result = await stockOut({
                     item_id: selectedItem.id,
@@ -263,13 +262,14 @@ export default function StockTransactionPage() {
                     quantity: Number(formData.quantity_out),
                     note: formData.note || "",
                 });
-                toast.success(result.message);
             }
 
             if (!result.success) {
                 toast.error(result.message);
                 return;
             }
+
+            toast.success(result.message);
 
             setEditOpen(false);
 
