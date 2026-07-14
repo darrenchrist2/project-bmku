@@ -115,3 +115,25 @@ export async function stockOut(data) {
         };
     }
 }
+
+export async function getBranchOffices() {
+    try {
+        const response = await api.get("/branch-offices");
+
+        return {
+            success: true,
+            data: response.data.data,
+            message: response.data.message,
+        };
+    } catch (error) {
+        console.error(error);
+
+        return {
+            success: false,
+            data: [],
+            message:
+                error.response?.data?.message ??
+                "Failed to fetch branch offices.",
+        };
+    }
+}

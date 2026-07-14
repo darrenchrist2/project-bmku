@@ -25,7 +25,7 @@ import {
     Eye,
 } from 'lucide-react';
 import './style.css';
-import { getMonthlyReport, getItemBranchUsage, stockIn, stockOut } from './funcAPICall';
+import { getMonthlyReport, getItemBranchUsage, stockIn, stockOut, getBranchOffices } from './funcAPICall';
 import DetailModal from '../../components/detailModal';
 import AddEditModal from '../../components/addEditModal';
 
@@ -70,9 +70,24 @@ export default function StockTransactionPage() {
     const [transactionMode, setTransactionMode] = useState("IN"); // IN | OUT
     const [selectedItem, setSelectedItem] = useState(null);
 
+    const [branchOffices, setBranchOffices] = useState([]);
+
+    useEffect(() => {
+        async function loadBranchOffices() {
+            const result = await getBranchOffices();
+
+            if (result.success) {
+                setBranchOffices(result.data);
+            }
+        }
+
+        loadBranchOffices();
+    }, []);
+
     const [formData, setFormData] = useState({
         quantity_in: "",
         quantity_out: "",
+        branch_office_id: "",
         note: "",
     });
 
@@ -121,6 +136,7 @@ export default function StockTransactionPage() {
         setFormData({
             quantity_in: "",
             quantity_out: "",
+            branch_office_id: "",
             note: "",
         });
 
@@ -135,6 +151,7 @@ export default function StockTransactionPage() {
             setFormData({
                 quantity_in: "",
                 quantity_out: "",
+                branch_office_id: "",
                 note: "",
             });
 
@@ -176,6 +193,17 @@ export default function StockTransactionPage() {
                 },
             ]
             : [
+                {
+                    name: "branch_office_id",
+                    label: "Cabang",
+                    type: "searchable-select",
+                    required: true,
+                    placeholder: "Pilih cabang",
+                    options: branchOffices.map(branch => ({
+                        value: branch.id,
+                        label: branch.name,
+                    })),
+                },
                 {
                     name: "quantity_out",
                     label: "Jumlah Stok Keluar",
@@ -224,7 +252,7 @@ export default function StockTransactionPage() {
         } else {
             result = await stockOut({
                 item_id: selectedItem.id,
-                branch_office_id: selectedItem.branch_office_id, // ganti jika nanti dipilih dari dropdown
+                branch_office_id: Number(formData.branch_office_id),
                 transaction_date: new Date().toISOString().split("T")[0],
                 quantity: Number(formData.quantity_out),
                 note: formData.note || "",

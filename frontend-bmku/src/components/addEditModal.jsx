@@ -11,6 +11,7 @@ import {
     Button,
     Spinner,
 } from 'reactstrap';
+import Select from "react-select";
 import { X } from 'lucide-react';
 import './addEditModal.css';
 
@@ -98,6 +99,21 @@ const AddEditModal = ({
                         </option>
                     ))}
                 </Input>
+            );
+        }
+
+        if (type === "searchable-select") {
+            return (
+                <Select
+                    options={options}
+                    value={options.find(opt => opt.value === value) || null}
+                    onChange={(selected) =>
+                        handleFieldChange(name, selected?.value ?? "")
+                    }
+                    placeholder={placeholder}
+                    isDisabled={disabled || isSubmitting}
+                    isSearchable
+                />
             );
         }
 
