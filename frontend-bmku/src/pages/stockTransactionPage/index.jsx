@@ -25,7 +25,7 @@ import {
     Eye,
 } from 'lucide-react';
 import './style.css';
-import { getMonthlyReport, getItemBranchUsage, stockIn, stockOut, getBranchOffices } from './funcAPICall';
+import { getMonthlyReport, getItemBranchUsage, stockIn, stockOut, getBranchOffices, getCurrentStock } from './funcAPICall';
 import DetailModal from '../../components/detailModal';
 import AddEditModal from '../../components/addEditModal';
 import { toast } from 'react-toastify';

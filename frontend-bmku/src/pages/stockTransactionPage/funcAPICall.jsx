@@ -137,3 +137,27 @@ export async function getBranchOffices() {
         };
     }
 }
+
+export async function getCurrentStock(itemId) {
+    try {
+        const response = await api.get(
+            `/inventory-transactions/current-stock/${itemId}`
+        );
+
+        return {
+            success: true,
+            data: response.data.data,
+            message: response.data.message,
+        };
+    } catch (error) {
+        console.error(error);
+
+        return {
+            success: false,
+            data: null,
+            message:
+                error.response?.data?.message ??
+                "Failed to fetch current stock.",
+        };
+    }
+}
