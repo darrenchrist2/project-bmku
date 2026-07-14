@@ -71,20 +71,13 @@ class InventoryTransactionController extends Controller
             'note' => 'nullable|string|max:255',
         ]);
 
-        try {
-            $transaction = $this->inventoryTransactionService->stockOut($validated);
+        $transaction = $this->inventoryTransactionService->stockOut($validated);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Stock issued successfully.',
-                'data' => $transaction,
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 400);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Stock issued successfully.',
+            'data' => $transaction,
+        ], 201);
     }
 
     /**
