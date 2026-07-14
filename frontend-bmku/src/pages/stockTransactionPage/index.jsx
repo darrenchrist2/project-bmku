@@ -28,6 +28,7 @@ import './style.css';
 import { getMonthlyReport, getItemBranchUsage, stockIn, stockOut, getBranchOffices } from './funcAPICall';
 import DetailModal from '../../components/detailModal';
 import AddEditModal from '../../components/addEditModal';
+import { toast } from 'react-toastify';
 
 const JENIS_CONFIG = {
     TONER: {
@@ -253,6 +254,7 @@ export default function StockTransactionPage() {
                     quantity: Number(formData.quantity_in),
                     note: formData.note || "",
                 });
+                toast.success(result.message);
             } else {
                 result = await stockOut({
                     item_id: selectedItem.id,
@@ -261,10 +263,11 @@ export default function StockTransactionPage() {
                     quantity: Number(formData.quantity_out),
                     note: formData.note || "",
                 });
+                toast.success(result.message);
             }
 
             if (!result.success) {
-                alert(result.message);
+                toast.error(result.message);
                 return;
             }
 
