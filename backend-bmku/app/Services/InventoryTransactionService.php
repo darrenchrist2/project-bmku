@@ -6,6 +6,7 @@ use App\Models\InventoryItem;
 use App\Models\InventoryTransaction;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Validation\ValidationException;
 
 class InventoryTransactionService
 {
@@ -48,16 +49,38 @@ class InventoryTransactionService
         ]);
     }
 
+    private function validateStock(int $itemId, int $quantity): void
+    {
+        $currentStock = $this->getCurrentStock($itemId);
+
+        if ($currentStock <= 0) {
+            throw ValidationException::withMessages([
+                'quantity' => 'Stock is empty.'
+            ]);
+        }
+
+        if ($quantity > $currentStock) {
+            throw ValidationException::withMessages([
+                'quantity' =>
+                    "Remaining stock is only {$currentStock}."
+            ]);
+        }
+    }
+
     /**
      * Stok Keluar.
      */
     public function stockOut(array $data): InventoryTransaction
     {
-        $currentStock = $this->getCurrentStock($data['item_id']);
+        // $currentStock = $this->getCurrentStock($data['item_id']);
 
-        if ($currentStock < $data['quantity']) {
-            throw new \Exception('Stock is not sufficient.');
-        }
+        // if ($currentStock < $data['quantity']) {
+        //     throw new \Exception('Stock is not sufficient.');
+        // }
+        $this->validateStock(
+            $data['item_id'],
+            $data['quantity']
+        );
 
         return InventoryTransaction::create([
             'item_id' => $data['item_id'],
