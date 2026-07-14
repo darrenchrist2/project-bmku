@@ -71,6 +71,7 @@ export default function StockTransactionPage() {
     const [selectedItem, setSelectedItem] = useState(null);
 
     const [branchOffices, setBranchOffices] = useState([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         async function loadBranchOffices() {
@@ -240,42 +241,48 @@ export default function StockTransactionPage() {
             return;
         }
 
-        let result;
+        setIsSubmitting(true);
 
-        if (transactionMode === "IN") {
-            result = await stockIn({
-                item_id: selectedItem.id,
-                transaction_date: new Date().toISOString().split("T")[0],
-                quantity: Number(formData.quantity_in),
-                note: formData.note || "",
-            });
-        } else {
-            result = await stockOut({
-                item_id: selectedItem.id,
-                branch_office_id: Number(formData.branch_office_id),
-                transaction_date: new Date().toISOString().split("T")[0],
-                quantity: Number(formData.quantity_out),
-                note: formData.note || "",
-            });
-        }
+        try {
+            let result;
 
-        if (!result.success) {
-            alert(result.message);
-            return;
-        }
+            if (transactionMode === "IN") {
+                result = await stockIn({
+                    item_id: selectedItem.id,
+                    transaction_date: new Date().toISOString().split("T")[0],
+                    quantity: Number(formData.quantity_in),
+                    note: formData.note || "",
+                });
+            } else {
+                result = await stockOut({
+                    item_id: selectedItem.id,
+                    branch_office_id: Number(formData.branch_office_id),
+                    transaction_date: new Date().toISOString().split("T")[0],
+                    quantity: Number(formData.quantity_out),
+                    note: formData.note || "",
+                });
+            }
 
-        setEditOpen(false);
+            if (!result.success) {
+                alert(result.message);
+                return;
+            }
 
-        // Refresh tabel
-        const refreshed = await getMonthlyReport(
-            selectedYear,
-            selectedMonth,
-            currentPage
-        );
+            setEditOpen(false);
 
-        if (refreshed.success) {
-            setReportData(refreshed.data);
-            setPagination(refreshed.pagination);
+            // Refresh tabel
+            const refreshed = await getMonthlyReport(
+                selectedYear,
+                selectedMonth,
+                currentPage
+            );
+
+            if (refreshed.success) {
+                setReportData(refreshed.data);
+                setPagination(refreshed.pagination);
+            }
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -592,6 +599,7 @@ export default function StockTransactionPage() {
                     onChange={handleChange}
                     onSubmit={handleSubmit}
                     submitLabel="Simpan"
+                    isSubmitting={isSubmitting}
                 />
             </Container>
         </div>
