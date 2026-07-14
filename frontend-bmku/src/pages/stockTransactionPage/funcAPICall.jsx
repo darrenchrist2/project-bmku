@@ -63,3 +63,55 @@ export async function getItemBranchUsage(itemId, year, month) {
         };
     }
 }
+
+export async function stockIn(data) {
+    try {
+        const response = await api.post(
+            "/inventory-transactions/stock-in",
+            data
+        );
+
+        return {
+            success: true,
+            data: response.data.data,
+            message: response.data.message,
+        };
+    } catch (error) {
+        console.error(error);
+
+        return {
+            success: false,
+            data: null,
+            errors: error.response?.data?.errors ?? {},
+            message:
+                error.response?.data?.message ??
+                "Failed to perform stock in.",
+        };
+    }
+}
+
+export async function stockOut(data) {
+    try {
+        const response = await api.post(
+            "/inventory-transactions/stock-out",
+            data
+        );
+
+        return {
+            success: true,
+            data: response.data.data,
+            message: response.data.message,
+        };
+    } catch (error) {
+        console.error(error);
+
+        return {
+            success: false,
+            data: null,
+            errors: error.response?.data?.errors ?? {},
+            message:
+                error.response?.data?.message ??
+                "Failed to perform stock out.",
+        };
+    }
+}

@@ -25,7 +25,7 @@ import {
     Eye,
 } from 'lucide-react';
 import './style.css';
-import { getMonthlyReport, getItemBranchUsage, } from './funcAPICall';
+import { getMonthlyReport, getItemBranchUsage, stockIn, stockOut } from './funcAPICall';
 import DetailModal from '../../components/detailModal';
 import AddEditModal from '../../components/addEditModal';
 
@@ -73,6 +73,7 @@ export default function StockTransactionPage() {
     const [formData, setFormData] = useState({
         quantity_in: "",
         quantity_out: "",
+        note: "",
     });
 
     const [errors, setErrors] = useState({});
@@ -120,6 +121,7 @@ export default function StockTransactionPage() {
         setFormData({
             quantity_in: "",
             quantity_out: "",
+            note: "",
         });
 
         setErrors({});
@@ -133,6 +135,7 @@ export default function StockTransactionPage() {
             setFormData({
                 quantity_in: "",
                 quantity_out: "",
+                note: "",
             });
 
             return;
@@ -181,21 +184,27 @@ export default function StockTransactionPage() {
                     placeholder: "Masukkan jumlah stok keluar",
                 },
             ]),
+
+        {
+            name: "note",
+            label: "Catatan",
+            type: "textarea",
+            rows: 3,
+            required: false,
+            full: true,
+            placeholder: "Catatan (opsional)",
+        },
     ];
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const newErrors = {};
 
-        if (transactionMode === "IN") {
-            if (!formData.quantity_in) {
-                newErrors.quantity_in = "Jumlah stok masuk wajib diisi";
-            }
+        if (transactionMode === "IN" && !formData.quantity_in) {
+            newErrors.quantity_in = "Jumlah stok masuk wajib diisi";
         }
 
-        if (transactionMode === "OUT") {
-            if (!formData.quantity_out) {
-                newErrors.quantity_out = "Jumlah stok keluar wajib diisi";
-            }
+        if (transactionMode === "OUT" && !formData.quantity_out) {
+            newErrors.quantity_out = "Jumlah stok keluar wajib diisi";
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -203,10 +212,43 @@ export default function StockTransactionPage() {
             return;
         }
 
-        // panggil API
-        console.log(transactionMode, formData);
+        let result;
+
+        if (transactionMode === "IN") {
+            result = await stockIn({
+                item_id: selectedItem.id,
+                transaction_date: new Date().toISOString().split("T")[0],
+                quantity: Number(formData.quantity_in),
+                note: formData.note || "",
+            });
+        } else {
+            result = await stockOut({
+                item_id: selectedItem.id,
+                branch_office_id: selectedItem.branch_office_id, // ganti jika nanti dipilih dari dropdown
+                transaction_date: new Date().toISOString().split("T")[0],
+                quantity: Number(formData.quantity_out),
+                note: formData.note || "",
+            });
+        }
+
+        if (!result.success) {
+            alert(result.message);
+            return;
+        }
 
         setEditOpen(false);
+
+        // Refresh tabel
+        const refreshed = await getMonthlyReport(
+            selectedYear,
+            selectedMonth,
+            currentPage
+        );
+
+        if (refreshed.success) {
+            setReportData(refreshed.data);
+            setPagination(refreshed.pagination);
+        }
     };
 
     const handleDetail = async (item) => {
