@@ -3,6 +3,7 @@ use App\Http\Controllers\BranchOfficeController;
 use App\Http\Controllers\TechnicianController;
 use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\InventoryTransactionController;
+use App\Http\Controllers\TechnicianStockController;
 
 // master data route
 Route::apiResource('branch-offices', BranchOfficeController::class);
@@ -31,4 +32,32 @@ Route::prefix('inventory-transactions')->group(function () {
 
     Route::delete('/{id}', [InventoryTransactionController::class, 'destroy'])
         ->whereNumber('id');
+});
+
+Route::prefix('technician-stocks')->group(function () {
+
+    // CRUD
+    Route::get('/', [TechnicianStockController::class, 'index']);
+
+    Route::post('/', [TechnicianStockController::class, 'store']);
+
+    Route::get('/monthly-usage', [
+        TechnicianStockController::class,
+        'monthlyUsage'
+    ]);
+
+    Route::get('/{id}', [
+        TechnicianStockController::class,
+        'show'
+    ])->whereNumber('id');
+
+    Route::put('/{id}', [
+        TechnicianStockController::class,
+        'update'
+    ])->whereNumber('id');
+
+    Route::delete('/{id}', [
+        TechnicianStockController::class,
+        'destroy'
+    ])->whereNumber('id');
 });
