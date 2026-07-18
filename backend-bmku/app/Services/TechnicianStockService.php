@@ -97,27 +97,18 @@ class TechnicianStockService
     public function getMonthlyUsage(
         int $year,
         int $month,
-        int $perPage = 10
+        int $perPage = 5
     ): LengthAwarePaginator {
 
-        return TechnicianStock::select(
-            'technician_stocks.id',
-            'technician_stocks.transaction_date',
-            'technician_stocks.quantity',
-            'technicians.full_name as technician_name',
-            'inventory_items.item_name'
+        $technicians = TechnicianStock::select(
+            'technicians.id',
+            'technicians.full_name'
         )
             ->join(
                 'technicians',
                 'technician_stocks.technician_id',
                 '=',
                 'technicians.id'
-            )
-            ->join(
-                'inventory_items',
-                'technician_stocks.item_id',
-                '=',
-                'inventory_items.id'
             )
             ->whereYear(
                 'technician_stocks.transaction_date',
@@ -127,7 +118,49 @@ class TechnicianStockService
                 'technician_stocks.transaction_date',
                 $month
             )
-            ->orderByDesc('technician_stocks.transaction_date')
+            ->groupBy(
+                'technicians.id',
+                'technicians.full_name'
+            )
+            ->orderBy('technicians.full_name')
             ->paginate($perPage);
+
+        $technicians->getCollection()->transform(function ($technician) use ($year, $month) {
+
+            $items = TechnicianStock::select(
+                'inventory_items.id as item_id',
+                'inventory_items.item_name'
+            )
+                ->selectRaw('SUM(technician_stocks.quantity) as total_quantity')
+                ->join(
+                    'inventory_items',
+                    'technician_stocks.item_id',
+                    '=',
+                    'inventory_items.id'
+                )
+                ->where('technician_stocks.technician_id', $technician->id)
+                ->whereYear(
+                    'technician_stocks.transaction_date',
+                    $year
+                )
+                ->whereMonth(
+                    'technician_stocks.transaction_date',
+                    $month
+                )
+                ->groupBy(
+                    'inventory_items.id',
+                    'inventory_items.item_name'
+                )
+                ->orderBy('inventory_items.item_name')
+                ->get();
+
+            return [
+                'technician_id' => $technician->id,
+                'technician_name' => $technician->full_name,
+                'items' => $items,
+            ];
+        });
+
+        return $technicians;
     }
 }
