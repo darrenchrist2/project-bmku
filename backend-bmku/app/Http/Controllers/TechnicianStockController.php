@@ -34,18 +34,6 @@ class TechnicianStockController extends Controller
     }
 
     /**
-     * Display technician stock record by ID.
-     */
-    public function show(int $id): JsonResponse
-    {
-        return response()->json([
-            'success' => true,
-            'message' => 'Technician stock record retrieved successfully.',
-            'data' => $this->technicianStockService->getTechnicianStockById($id),
-        ]);
-    }
-
-    /**
      * Store new technician stock record.
      */
     public function store(Request $request): JsonResponse

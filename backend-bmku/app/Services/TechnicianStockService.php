@@ -22,18 +22,6 @@ class TechnicianStockService
     }
 
     /**
-     * Detail pengambilan.
-     */
-    public function getTechnicianStockById(
-        int $id
-    ): TechnicianStock {
-        return TechnicianStock::with([
-            'technician',
-            'item'
-        ])->findOrFail($id);
-    }
-
-    /**
      * Simpan data pengambilan.
      */
     public function createTechnicianStock(
