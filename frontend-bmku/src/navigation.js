@@ -3,7 +3,7 @@ import { Printer, Wrench, FileBarChart2, Package } from 'lucide-react';
 export const ROUTES = {
     spare_part_toner: '/spare-part-toner',
     maintenance: '/riwayat-perbaikan-mesin',
-    stockUsage: '/penggunaan-stok-teknisi',
+    technicianStockPage: '/technician-stock',
     stockPage: '/stock-page',
 };
 
@@ -21,10 +21,10 @@ export const NAV_ITEMS = [
         path: ROUTES.maintenance,
     },
     {
-        key: 'stock_usage',
+        key: 'technician_stock',
         label: 'Penggunaan Stok oleh Teknisi',
         icon: FileBarChart2,
-        path: ROUTES.stockUsage,
+        path: ROUTES.technicianStockPage,
     },
     {
         key: 'stock_page',
