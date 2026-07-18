@@ -74,6 +74,8 @@ export default function StockTransactionPage() {
     const [branchOffices, setBranchOffices] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const [currentStock, setCurrentStock] = useState(null);
+
     useEffect(() => {
         async function loadBranchOffices() {
             const result = await getBranchOffices();
@@ -129,7 +131,12 @@ export default function StockTransactionPage() {
         });
     }, [reportData, searchTerm, jenisFilter]);
 
-    const handleEdit = (item) => {
+    const closeModal = () => {
+        setEditOpen(false);
+        setCurrentStock(null);
+    };
+
+    const handleEdit = async (item) => {
         setSelectedItem(item);
 
         // default ketika modal dibuka
@@ -143,6 +150,16 @@ export default function StockTransactionPage() {
         });
 
         setErrors({});
+
+        // ambil stok terbaru
+        const result = await getCurrentStock(item.id);
+
+        if (result.success) {
+            setCurrentStock(result.data.current_stock);
+        } else {
+            setCurrentStock(null);
+        }
+
         setEditOpen(true);
     };
 
@@ -590,9 +607,11 @@ export default function StockTransactionPage() {
 
                 <AddEditModal
                     isOpen={editOpen}
-                    toggle={() => setEditOpen(false)}
+                    // toggle={() => setEditOpen(false)}
+                    toggle={closeModal}
                     title={selectedItem?.item_name || ""}
                     subtitle="Tambah Mutasi Stok"
+                    currentStock={currentStock}
                     fields={modalFields}
                     values={{
                         transaction_mode: transactionMode,

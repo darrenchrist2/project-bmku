@@ -10,6 +10,7 @@ import {
     FormFeedback,
     Button,
     Spinner,
+    Badge,
 } from 'reactstrap';
 import Select from "react-select";
 import { X } from 'lucide-react';
@@ -44,6 +45,7 @@ const AddEditModal = ({
     toggle,
     title,
     subtitle,
+    currentStock = null,
     fields = [],
     values = {},
     errors = {},
@@ -171,7 +173,16 @@ const AddEditModal = ({
             <div className="rm-header">
                 <div className="rm-header-text">
                     <h2 className="rm-title">{title}</h2>
-                    {subtitle && <p className="rm-subtitle">{subtitle}</p>}
+
+                    {subtitle && (
+                        <p className="rm-subtitle">{subtitle}</p>
+                    )}
+
+                    {currentStock !== null && (
+                        <Badge color="primary" pill className="rm-stock-badge">
+                            Stok terkini: {currentStock}
+                        </Badge>
+                    )}
                 </div>
                 <button
                     type="button"

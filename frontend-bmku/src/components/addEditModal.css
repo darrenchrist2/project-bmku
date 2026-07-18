@@ -282,3 +282,27 @@
     height: 14px;
     border-width: 2px;
 }
+
+.rm-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.rm-stock-badge {
+    font-size: 0.75rem;
+    padding: 0.45rem 0.75rem;
+    font-weight: 600;
+}
+
+.rm-stock-badge {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.22rem 0.55rem;
+    line-height: 1.2;
+}
