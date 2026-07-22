@@ -115,6 +115,18 @@ const AddEditModal = ({
                     placeholder={placeholder}
                     isDisabled={disabled || isSubmitting}
                     isSearchable
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    styles={{
+                        menuPortal: (base) => ({
+                            ...base,
+                            zIndex: 9999,
+                        }),
+                        menu: (base) => ({
+                            ...base,
+                            zIndex: 9999,
+                        }),
+                    }}
                 />
             );
         }
