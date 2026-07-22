@@ -161,3 +161,84 @@ export async function getCurrentStock(itemId) {
         };
     }
 }
+
+export async function getTechnicianMonthlyUsage(year, month, page = 1) {
+    try {
+        const response = await api.get(
+            "/technician-stocks/monthly-usage",
+            {
+                params: {
+                    year,
+                    month,
+                    page,
+                },
+            }
+        );
+
+        return {
+            success: true,
+            data: response.data.data,
+            pagination: response.data.pagination,
+            message: response.data.message,
+        };
+    } catch (error) {
+        console.error(error);
+
+        return {
+            success: false,
+            data: [],
+            pagination: null,
+            message:
+                error.response?.data?.message ??
+                "Failed to fetch technician monthly usage.",
+        };
+    }
+}
+
+export async function createTechnicianStock(data) {
+    try {
+        const response = await api.post(
+            "/technician-stocks",
+            data
+        );
+
+        return {
+            success: true,
+            data: response.data.data,
+            message: response.data.message,
+        };
+    } catch (error) {
+        console.error(error);
+
+        return {
+            success: false,
+            data: null,
+            errors: error.response?.data?.errors ?? {},
+            message:
+                error.response?.data?.message ??
+                "Failed to create technician stock.",
+        };
+    }
+}
+
+export async function getInventoryItems() {
+    try {
+        const response = await api.get("/inventory-items");
+
+        return {
+            success: true,
+            data: response.data.data,
+            message: response.data.message,
+        };
+    } catch (error) {
+        console.error('Failed to fetch inventory items:', error);
+
+        return {
+            success: false,
+            data: [],
+            message:
+                error.response?.data?.message ||
+                'Failed to fetch inventory items.',
+        };
+    }
+}

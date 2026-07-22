@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
     Container,
     Card,
@@ -9,7 +8,6 @@ import {
     Input,
     InputGroup,
     InputGroupText,
-    Badge,
     UncontrolledTooltip,
     Pagination,
     PaginationItem,
@@ -17,43 +15,20 @@ import {
 } from 'reactstrap';
 import {
     Search,
-    Plus,
     Pencil,
-    ArrowDownCircle,
-    ArrowUpCircle,
     PackageSearch,
     Eye,
 } from 'lucide-react';
 import './style.css';
-import { getMonthlyReport, getItemBranchUsage, stockIn, stockOut, getBranchOffices, getCurrentStock } from './funcAPICall';
+import {
+    getTechnicianMonthlyUsage, createTechnicianStock, getInventoryItems,
+} from './funcAPICall';
 import DetailModal from '../../components/detailModal';
 import AddEditModal from '../../components/addEditModal';
 import { toast } from 'react-toastify';
 
-const JENIS_CONFIG = {
-    TONER: {
-        color: "primary",
-        className: "sp-badge--toner",
-    },
-    SPAREPART: {
-        color: "warning",
-        className: "sp-badge--sparepart",
-    },
-};
-
-// function formatTanggal(isoDate) {
-//     const date = new Date(`${isoDate}T00:00:00`);
-//     return date.toLocaleDateString('id-ID', {
-//         day: '2-digit',
-//         month: 'short',
-//         year: 'numeric',
-//     });
-// }
-
 export default function TechnicianStockPage() {
-    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
-    const [jenisFilter, setJenisFilter] = useState('Semua');
     const today = new Date();
     const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(today.getFullYear());
@@ -68,30 +43,28 @@ export default function TechnicianStockPage() {
     const [pagination, setPagination] = useState(null);
 
     const [editOpen, setEditOpen] = useState(false);
-    const [transactionMode, setTransactionMode] = useState("IN"); // IN | OUT
     const [selectedItem, setSelectedItem] = useState(null);
 
-    const [branchOffices, setBranchOffices] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [currentStock, setCurrentStock] = useState(null);
+    const [inventoryItems, setInventoryItems] = useState([]);
 
     useEffect(() => {
-        async function loadBranchOffices() {
-            const result = await getBranchOffices();
+        async function loadItems() {
+            const result = await getInventoryItems();
 
             if (result.success) {
-                setBranchOffices(result.data);
+                setInventoryItems(result.data);
             }
         }
 
-        loadBranchOffices();
+        loadItems();
     }, []);
 
     const [formData, setFormData] = useState({
-        quantity_in: "",
-        quantity_out: "",
-        branch_office_id: "",
+        item_id: "",
+        transaction_date: new Date().toISOString().split("T")[0],
+        quantity: "",
         note: "",
     });
 
@@ -99,7 +72,7 @@ export default function TechnicianStockPage() {
 
     useEffect(() => {
         async function loadData() {
-            const result = await getMonthlyReport(
+            const result = await getTechnicianMonthlyUsage(
                 selectedYear,
                 selectedMonth,
                 currentPage
@@ -118,64 +91,33 @@ export default function TechnicianStockPage() {
     }, [selectedYear, selectedMonth, currentPage]);
 
     const filteredData = useMemo(() => {
-        return reportData.filter((item) => {
-            const matchSearch = item.item_name
+        return reportData.filter((technician) =>
+            technician.technician_name
                 .toLowerCase()
-                .includes(searchTerm.trim().toLowerCase());
-
-            const matchJenis =
-                jenisFilter === 'Semua' ||
-                item.category === jenisFilter;
-
-            return matchSearch && matchJenis;
-        });
-    }, [reportData, searchTerm, jenisFilter]);
+                .includes(searchTerm.trim().toLowerCase())
+        );
+    }, [reportData, searchTerm]);
 
     const closeModal = () => {
         setEditOpen(false);
-        setCurrentStock(null);
+        setSelectedItem(null);
     };
 
-    const handleEdit = async (item) => {
-        setSelectedItem(item);
-
-        // default ketika modal dibuka
-        setTransactionMode("IN");
+    const handleEdit = (technician) => {
+        setSelectedItem(technician);
 
         setFormData({
-            quantity_in: "",
-            quantity_out: "",
-            branch_office_id: "",
+            item_id: "",
+            transaction_date: new Date().toISOString().split("T")[0],
+            quantity: "",
             note: "",
         });
 
         setErrors({});
-
-        // ambil stok terbaru
-        const result = await getCurrentStock(item.id);
-
-        if (result.success) {
-            setCurrentStock(result.data.current_stock);
-        } else {
-            setCurrentStock(null);
-        }
-
         setEditOpen(true);
     };
 
     const handleChange = (name, value) => {
-        if (name === "transaction_mode") {
-            setTransactionMode(value);
-
-            setFormData({
-                quantity_in: "",
-                quantity_out: "",
-                branch_office_id: "",
-                note: "",
-            });
-
-            return;
-        }
 
         setFormData((prev) => ({
             ...prev,
@@ -185,74 +127,49 @@ export default function TechnicianStockPage() {
 
     const modalFields = [
         {
-            name: "transaction_mode",
-            label: "Mode Transaksi",
-            type: "select",
+            name: "item_id",
+            label: "Barang",
+            type: "searchable-select",
             required: true,
-            options: [
-                {
-                    value: "IN",
-                    label: "Stock In",
-                },
-                {
-                    value: "OUT",
-                    label: "Stock Out",
-                },
-            ],
+            placeholder: "Pilih barang",
+            options: inventoryItems.map(item => ({
+                value: item.id,
+                label: item.item_name,
+            })),
         },
-
-        ...(transactionMode === "IN"
-            ? [
-                {
-                    name: "quantity_in",
-                    label: "Jumlah Stok Masuk",
-                    type: "number",
-                    required: true,
-                    placeholder: "Masukkan jumlah stok masuk",
-                },
-            ]
-            : [
-                {
-                    name: "branch_office_id",
-                    label: "Cabang",
-                    type: "searchable-select",
-                    required: true,
-                    placeholder: "Pilih cabang",
-                    options: branchOffices.map(branch => ({
-                        value: branch.id,
-                        label: branch.name,
-                    })),
-                },
-                {
-                    name: "quantity_out",
-                    label: "Jumlah Stok Keluar",
-                    type: "number",
-                    required: true,
-                    placeholder: "Masukkan jumlah stok keluar",
-                },
-            ]),
-
+        {
+            name: "transaction_date",
+            label: "Tanggal Pengambilan",
+            type: "date",
+            required: true,
+        },
+        {
+            name: "quantity",
+            label: "Jumlah",
+            type: "number",
+            required: true,
+            placeholder: "Masukkan jumlah",
+        },
         {
             name: "note",
             label: "Catatan",
             type: "textarea",
             rows: 3,
-            required: false,
             full: true,
-            placeholder: "Catatan (opsional)",
         },
     ];
 
     const handleSubmit = async () => {
         const newErrors = {};
 
-        if (transactionMode === "IN" && !formData.quantity_in) {
-            newErrors.quantity_in = "Jumlah stok masuk wajib diisi";
-        }
+        if (!formData.item_id)
+            newErrors.item_id = "Barang wajib dipilih";
 
-        if (transactionMode === "OUT" && !formData.quantity_out) {
-            newErrors.quantity_out = "Jumlah stok keluar wajib diisi";
-        }
+        if (!formData.quantity)
+            newErrors.quantity = "Jumlah wajib diisi";
+
+        if (!formData.transaction_date)
+            newErrors.transaction_date = "Tanggal wajib diisi";
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -262,27 +179,17 @@ export default function TechnicianStockPage() {
         setIsSubmitting(true);
 
         try {
-            let result;
-
-            if (transactionMode === "IN") {
-                result = await stockIn({
-                    item_id: selectedItem.id,
-                    transaction_date: new Date().toISOString().split("T")[0],
-                    quantity: Number(formData.quantity_in),
-                    note: formData.note || "",
-                });
-            } else {
-                result = await stockOut({
-                    item_id: selectedItem.id,
-                    branch_office_id: Number(formData.branch_office_id),
-                    transaction_date: new Date().toISOString().split("T")[0],
-                    quantity: Number(formData.quantity_out),
-                    note: formData.note || "",
-                });
-            }
+            const result = await createTechnicianStock({
+                technician_id: selectedItem.technician_id,
+                item_id: Number(formData.item_id),
+                transaction_date: formData.transaction_date,
+                quantity: Number(formData.quantity),
+                note: formData.note,
+            });
 
             if (!result.success) {
                 toast.error(result.message);
+                setErrors(result.errors ?? {});
                 return;
             }
 
@@ -290,8 +197,7 @@ export default function TechnicianStockPage() {
 
             setEditOpen(false);
 
-            // Refresh tabel
-            const refreshed = await getMonthlyReport(
+            const refreshed = await getTechnicianMonthlyUsage(
                 selectedYear,
                 selectedMonth,
                 currentPage
@@ -306,37 +212,17 @@ export default function TechnicianStockPage() {
         }
     };
 
-    const handleDetail = async (item) => {
-        const result = await getItemBranchUsage(
-            item.id,
-            selectedYear,
-            selectedMonth
-        );
+    const handleDetail = (technician) => {
+        const modalData = technician.items.map((item) => ({
+            label: item.item_name,
+            type: "longtext",
+            full: true,
+            value:
+                `Nama Barang : ${item.item_name}\n` +
+                `Jumlah      : ${item.total_quantity} PCS`,
+        }));
 
-        if (!result.success) {
-            return;
-        }
-
-        const modalData = result.data.map((row, index) => {
-            const isStockIn = row.transaction_type === "IN";
-
-            return {
-                label: `${isStockIn ? "Barang Masuk" : "Barang Keluar"}`,
-                type: "longtext",
-                full: true,
-                labelBadge: true,
-                labelVariant: isStockIn ? "success" : "danger",
-                value: isStockIn ?
-                    `Tanggal         : ${new Date(row.transaction_date).toLocaleDateString("id-ID")}\n` +
-                    `Jumlah          : ${row.quantity}`
-                    :
-                    `Tanggal         : ${new Date(row.transaction_date).toLocaleDateString("id-ID")}\n` +
-                    `Cabang          : ${row.branch_name}\n` +
-                    `Jumlah          : ${row.quantity}`,
-            };
-        });
-
-        setDetailTitle(item.item_name);
+        setDetailTitle(technician.technician_name);
         setDetailData(modalData);
         setDetailOpen(true);
     };
@@ -366,20 +252,10 @@ export default function TechnicianStockPage() {
             <Container fluid className="sp-container">
                 <div className="sp-page-header">
                     <div>
-                        <h1 className="sp-title">Aliran Stok Spare Part &amp; Toner</h1>
+                        <h1 className="sp-title">Penggunaan Stok Spare Part &amp; Toner oleh Teknisi</h1>
                         <p className="sp-subtitle">
-                            Pantau mutasi stok masuk dan keluar untuk kebutuhan spare part dan toner mesin printer.
+                            Pantau penggunaan spare part dan toner mesin printer oleh para teknisi.
                         </p>
-                    </div>
-                    <div className="sp-actions">
-                        <Button color="primary" className="sp-btn-add" onClick={() => navigate('/stock-page')}>
-                            <span>Stok Terkini</span>
-                        </Button>
-
-                        {/* <Button color="primary" className="sp-btn-add">
-                            <Plus size={18} strokeWidth={2.25} />
-                            <span>Tambah Mutasi</span>
-                        </Button> */}
                     </div>
                 </div>
 
@@ -392,10 +268,10 @@ export default function TechnicianStockPage() {
                                 </InputGroupText>
                                 <Input
                                     type="text"
-                                    placeholder="Cari nama barang..."
+                                    placeholder="Cari nama teknisi..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    aria-label="Cari nama barang"
+                                    aria-label="Cari nama teknisi"
                                 />
                             </InputGroup>
 
@@ -433,113 +309,68 @@ export default function TechnicianStockPage() {
                                     </option>
                                 ))}
                             </Input>
-
-                            <Input
-                                type="select"
-                                className="sp-filter"
-                                value={jenisFilter}
-                                onChange={(e) => setJenisFilter(e.target.value)}
-                                aria-label="Filter jenis barang"
-                            >
-                                <option value="Semua">Semua Jenis</option>
-                                <option value="TONER">Toner</option>
-                                <option value="SPAREPART">Spare Part</option>
-                            </Input>
                         </div>
 
                         <div className="sp-table-wrap">
                             <Table responsive borderless className="sp-table">
                                 <thead>
                                     <tr>
-                                        <th>Nama Barang</th>
-                                        <th>Jenis Barang</th>
-
-                                        <th className="sp-col-center">
-                                            <ArrowDownCircle
-                                                size={16}
-                                                className="sp-icon-masuk me-1"
-                                            />
-                                            Jumlah Masuk
-                                        </th>
-
-                                        <th className="sp-col-center">
-                                            <ArrowUpCircle
-                                                size={16}
-                                                className="sp-icon-keluar me-1"
-                                            />
-                                            Jumlah Keluar
-                                        </th>
-
+                                        <th>Nama Teknisi</th>
                                         <th className="sp-col-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredData.length === 0 && (
                                         <tr>
-                                            <td colSpan={5} className="sp-empty">
+                                            <td colSpan={2} className="sp-empty">
                                                 <PackageSearch size={28} strokeWidth={1.5} />
                                                 <span>Tidak ada data yang cocok.</span>
                                             </td>
                                         </tr>
                                     )}
 
-                                    {filteredData.map((item) => {
+                                    {filteredData.map((technician) => {
                                         return (
-                                            <tr key={item.id}>
+                                            <tr key={technician.technician_id}>
                                                 <td className="sp-nama">
-                                                    {item.item_name}
-                                                </td>
-
-                                                <td>
-                                                    <Badge
-                                                        pill
-                                                        color={JENIS_CONFIG[item.category]?.color}
-                                                        className={`sp-badge ${JENIS_CONFIG[item.category]?.className || ""}`}
-                                                    >
-                                                        {item.category}
-                                                    </Badge>
-                                                </td>
-
-                                                <td className="sp-col-center sp-jumlah">
-                                                    {item.total_in}
-                                                </td>
-
-                                                <td className="sp-col-center sp-jumlah">
-                                                    {item.total_out}
+                                                    {technician.technician_name}
                                                 </td>
 
                                                 <td className="sp-col-center">
                                                     <div className="d-flex justify-content-center gap-2">
+
                                                         <Button
-                                                            id={`detail-btn-${item.id}`}
+                                                            id={`detail-btn-${technician.technician_id}`}
                                                             color="info"
                                                             size="sm"
                                                             className="sp-btn-edit"
-                                                            onClick={() => handleDetail(item)}
-                                                            aria-label={`Detail ${item.item_name}`}
+                                                            onClick={() => handleDetail(technician)}
                                                         >
-                                                            <Eye size={15} strokeWidth={2} />
+                                                            <Eye size={15} />
                                                         </Button>
 
                                                         <UncontrolledTooltip
-                                                            target={`detail-btn-${item.id}`}
-                                                            placement="top"
+                                                            target={`detail-btn-${technician.technician_id}`}
                                                         >
                                                             Detail
                                                         </UncontrolledTooltip>
+
                                                         <Button
-                                                            id={`edit-btn-${item.id}`}
+                                                            id={`edit-btn-${technician.technician_id}`}
                                                             color="light"
                                                             size="sm"
                                                             className="sp-btn-edit"
-                                                            onClick={() => handleEdit(item)}
-                                                            aria-label={`Edit stok ${item.nama}`}
+                                                            onClick={() => handleEdit(technician)}
                                                         >
-                                                            <Pencil size={15} strokeWidth={2} />
+                                                            <Pencil size={15} />
                                                         </Button>
-                                                        <UncontrolledTooltip target={`edit-btn-${item.id}`} placement="top">
+
+                                                        <UncontrolledTooltip
+                                                            target={`edit-btn-${technician.technician_id}`}
+                                                        >
                                                             Edit
                                                         </UncontrolledTooltip>
+
                                                     </div>
                                                 </td>
                                             </tr>
@@ -599,7 +430,7 @@ export default function TechnicianStockPage() {
                 <DetailModal
                     isOpen={detailOpen}
                     toggle={() => setDetailOpen(false)}
-                    eyebrow="Detail Pemakaian Cabang"
+                    eyebrow="Detail Penggunaan stok oleh teknisi"
                     title={detailTitle}
                     subtitle={`${MONTHS[selectedMonth - 1]} ${selectedYear}`}
                     data={detailData}
@@ -607,14 +438,11 @@ export default function TechnicianStockPage() {
 
                 <AddEditModal
                     isOpen={editOpen}
-                    // toggle={() => setEditOpen(false)}
                     toggle={closeModal}
-                    title={selectedItem?.item_name || ""}
-                    subtitle="Tambah Mutasi Stok"
-                    currentStock={currentStock}
+                    title={selectedItem?.technician_name || ""}
+                    subtitle="Tambah Penggunaan Sparepart / Toner"
                     fields={modalFields}
                     values={{
-                        transaction_mode: transactionMode,
                         ...formData,
                     }}
                     errors={errors}
