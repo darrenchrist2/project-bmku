@@ -213,14 +213,17 @@ export default function TechnicianStockPage() {
     };
 
     const handleDetail = (technician) => {
-        const modalData = technician.items.map((item) => ({
-            label: item.item_name,
-            type: "longtext",
-            full: true,
-            value:
-                `Nama Barang : ${item.item_name}\n` +
-                `Jumlah      : ${item.total_quantity} PCS`,
-        }));
+        const modalData = technician.items.flatMap((item) => [
+            {
+                label: item.item_name,
+                labelBadge: true,
+                labelVariant: "info",
+                value: item.total_quantity,
+                type: "number",
+                unit: "PCS",
+                full: true,
+            },
+        ]);
 
         setDetailTitle(technician.technician_name);
         setDetailData(modalData);
